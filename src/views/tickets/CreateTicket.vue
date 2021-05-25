@@ -3,8 +3,8 @@
     <form @submit.prevent="submitted">
       <button>Create a new ticket</button>
     </form>
-    <div v-if="fetching"><h2>Fetching Data!</h2></div>
-    <div class="search-results">
+    <div v-if="fetching"><h2>Sending...</h2></div>
+    <div class="result">
       <ul>
         <p>{{ data }}</p>
       </ul>
@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import useTicket from "../../composables/use-ticket";
+import { createTicket } from "../../composables/use-ticket";
 
 export default {
   name: "CreateTicket",
   setup() {
-    const { data, submitted, error, fetching } = useTicket();
+    const { data, submitted, error, fetching } = createTicket();
 
     return {
       data,

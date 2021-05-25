@@ -7,15 +7,21 @@
   </aside>
   <router-view />
   <CreateTicket />
+  <ReplyTicket />
+  <AddNoteToTicket />
 </template>
 
 <script>
-import CreateTicket from "./views/tickets/CreateTicket";
+import CreateTicket from './views/tickets/CreateTicket';
+import ReplyTicket from './views/tickets/ReplyTicket';
+import AddNoteToTicket from './views/tickets/AddNoteToTicket';
 
 export default {
-  name: "app",
+  name: 'app',
   components: {
     CreateTicket,
+    ReplyTicket,
+    AddNoteToTicket,
   },
 };
 </script>
@@ -24,7 +30,7 @@ export default {
 @use "./scss/meta" as m;
 
 #app {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
