@@ -1,9 +1,9 @@
 import { toRefs, reactive, ref } from 'vue';
-import { post, patch } from './use-axios';
+import { post, patch } from './axiosController';
 
 function createTicket() {
   let ticket = reactive({ data: [], error: null, fetching: false });
-  // let errors = reactive({error: null});
+
   const submitted = async () => {
     const { response, error, postData, fetching } = post(
       'http://localhost:1928/api/tickets/new',
@@ -12,7 +12,7 @@ function createTicket() {
       },
       { withCredentials: true }
     );
-    postData();
+    await postData();
     ticket.data = response;
     ticket.error = error;
     ticket.fetching = fetching;
@@ -24,7 +24,7 @@ function createTicket() {
 function replyTicket() {
   let ticket = reactive({ data: [], error: null, fetching: false });
   const val = ref('');
-  // let errors = reactive({error: null});
+
   const submitted = async () => {
     console.log(val.value);
     const { response, error, postData, fetching } = patch(
@@ -46,13 +46,14 @@ function replyTicket() {
 function addNoteToTicket() {
   let ticket = reactive({ data: [], error: null, fetching: false });
   const val = ref('');
-  // let errors = reactive({error: null});
+
   const submitted = async () => {
     console.log(val.value);
     const { response, error, postData, fetching } = patch(
       'http://localhost:1928/api/tickets/notes/new',
       {
         ticketId: val.value,
+
         text: 'This is a note',
       },
       { withCredentials: true }
@@ -65,4 +66,27 @@ function addNoteToTicket() {
   return { submitted, ...toRefs(ticket), val };
 }
 
-export { createTicket, replyTicket, addNoteToTicket };
+function editNote() {
+  let ticket = reactive({ data: [], error: null, fetching: false });
+  const ticketId = ref('');
+  const noteId = ref('');
+
+  const submitted = async () => {
+    const { response, error, postData, fetching } = patch(
+      'http://localhost:1928/api/tickets/notes/edit',
+      {
+        ticketId: ticketId.value,
+        noteId: noteId.value,
+        text: 'This note was edited',
+      },
+      { withCredentials: true }
+    );
+    postData();
+    ticket.data = response;
+    ticket.error = error;
+    ticket.fetching = fetching;
+  };
+  return { submitted, ...toRefs(ticket), ticketId, noteId };
+}
+
+export { createTicket, replyTicket, addNoteToTicket, editNote };

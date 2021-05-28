@@ -5,16 +5,20 @@
       <a href="http://localhost:1928/api/logout">Logut</a>
     </nav>
   </aside>
-  <router-view />
+
+  <!--<GetSystemData />-->
   <CreateTicket />
   <ReplyTicket />
   <AddNoteToTicket />
+  <EditNote />
 </template>
 
 <script>
 import CreateTicket from './views/tickets/CreateTicket';
 import ReplyTicket from './views/tickets/ReplyTicket';
-import AddNoteToTicket from './views/tickets/AddNoteToTicket';
+import AddNoteToTicket from './views/tickets/notes/AddNoteToTicket';
+import EditNote from './views/tickets/notes/EditNote';
+//import GetSystemData from './views/system/GetSystemData';
 
 export default {
   name: 'app',
@@ -22,6 +26,8 @@ export default {
     CreateTicket,
     ReplyTicket,
     AddNoteToTicket,
+    // GetSystemData,
+    EditNote,
   },
 };
 </script>

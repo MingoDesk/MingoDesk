@@ -15,14 +15,13 @@
 </template>
 
 <script>
-import { replyTicket } from "../../composables/use-ticket";
+import { replyTicket } from "../../composables/ticketController";
 
 export default {
   name: "ReplyTicket",
   setup() {
     const { data, val, submitted, error, fetching } = replyTicket();
 
-    console.log(val.value);
     return {
       data,
       submitted,

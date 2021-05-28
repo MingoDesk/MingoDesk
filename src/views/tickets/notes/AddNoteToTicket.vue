@@ -1,7 +1,9 @@
 <template>
   <section class="CreateTicket">
     <form @submit.prevent="submitted">
-      <button>Create a new ticket</button>
+      <label for="ticketId">ticketId</label>
+      <input v-model="val" type="text" name="ticketId" />
+      <button>Reply to the ticket</button>
     </form>
     <div v-if="fetching"><h2>Sending...</h2></div>
     <div class="result">
@@ -13,23 +15,24 @@
 </template>
 
 <script>
-import { createTicket } from "../../composables/ticketController";
+import { addNoteToTicket } from "../../../composables/ticketController";
 
 export default {
-  name: "CreateTicket",
+  name: "AddNoteToTicket",
   setup() {
-    const { data, submitted, error, fetching } = createTicket();
+    const { data, val, submitted, error, fetching } = addNoteToTicket();
 
     return {
       data,
       submitted,
       error,
       fetching,
+      val,
     };
   },
   data() {
     return {
-      name: "CreateTicket.vue",
+      name: "AddNoteToTicket.vue",
     };
   },
 };

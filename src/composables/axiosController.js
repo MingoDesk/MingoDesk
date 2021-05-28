@@ -43,4 +43,24 @@ function patch(url, data, options) {
   return { ...toRefs(state), postData };
 }
 
-export { patch, post };
+function get(baseUrl, params, options) {
+  const state = reactive({ response: [], errors: null, fetching: true });
+
+  const getData = async () => {
+    try {
+      const res = await axios.get(baseUrl, {
+        params,
+        options,
+      });
+      state.response = res.data;
+    } catch (error) {
+      state.errors = error;
+    } finally {
+      state.fetching = false;
+    }
+  };
+
+  return { ...toRefs(state), getData };
+}
+
+export { patch, post, get };
