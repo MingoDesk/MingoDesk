@@ -1,15 +1,23 @@
 module.exports = {
   root: true,
   env: {
-    browser: true,
     node: true,
   },
   extends: [
-    '@nuxtjs/eslint-config-typescript',
-    'plugin:prettier/recommended',
-    'plugin:nuxt/recommended',
+    'plugin:vue/vue3-essential',
+    'eslint:recommended',
+    '@vue/typescript/recommended',
+    '@vue/prettier',
+    '@vue/prettier/@typescript-eslint',
   ],
-  plugins: [],
-  // add your custom rules here
-  rules: {},
-}
+  parserOptions: {
+    ecmaVersion: 2020,
+    avoidEscape: true,
+    allowTemplateLiterals: true,
+    single: true,
+  },
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+  },
+};
