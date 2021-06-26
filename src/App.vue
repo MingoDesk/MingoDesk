@@ -1,10 +1,10 @@
 <template>
-  <aside>
+  <nav>
     <nav id="nav">
       <a href="http://localhost:1928/api/login">Login</a> |
       <a href="http://localhost:1928/api/logout">Logut</a>
     </nav>
-  </aside>
+  </nav>
 
   <!--<GetSystemData />-->
   <CreateTicket />
