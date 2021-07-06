@@ -5,18 +5,18 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
+import Vue, { defineComponent } from 'vue';
 import Tag from './components/Tag.vue';
 
 interface IColors {
   [key: string]: string;
 }
 
-@Options({
+defineComponent({
   components: {
     Tag,
   },
-})
+});
 export default class App extends Vue {
   data(): IColors {
     return {
