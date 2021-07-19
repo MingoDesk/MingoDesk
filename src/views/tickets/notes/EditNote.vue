@@ -4,7 +4,7 @@
       <label for="ticketId">ticketId</label>
       <input v-model="ticketId" type="text" name="ticketId" />
       <input v-model="noteId" type="text" name="noteId" />
-      <button>Reply to the ticket</button>
+      <button>Edit note on ticket</button>
     </form>
     <div v-if="fetching"><h2>Sending...</h2></div>
     <div class="result">
@@ -16,10 +16,10 @@
 </template>
 
 <script>
-import { editNote } from "../../../composables/ticketController";
+import { editNote } from '../../../composables/ticketController';
 
 export default {
-  name: "AddNoteToTicket",
+  name: 'AddNoteToTicket',
   setup() {
     const { data, ticketId, noteId, submitted, error, fetching } = editNote();
 
@@ -34,7 +34,7 @@ export default {
   },
   data() {
     return {
-      name: "AddNoteToTicket.vue",
+      name: 'AddNoteToTicket.vue',
     };
   },
 };

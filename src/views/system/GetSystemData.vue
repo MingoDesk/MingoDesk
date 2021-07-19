@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { getAppSettings } from "../../composables/systemController";
+import { getAppSettings } from '../../composables/systemController';
 
 export default {
   setup() {

@@ -11,6 +11,7 @@
   <ReplyTicket />
   <AddNoteToTicket />
   <EditNote />
+  <CreateOrganisation />
 </template>
 
 <script>
@@ -18,6 +19,8 @@ import CreateTicket from './views/tickets/CreateTicket';
 import ReplyTicket from './views/tickets/ReplyTicket';
 import AddNoteToTicket from './views/tickets/notes/AddNoteToTicket';
 import EditNote from './views/tickets/notes/EditNote';
+import CreateOrganisation from './views/organisation/createOrganisation.vue';
+
 //import GetSystemData from './views/system/GetSystemData';
 
 export default {
@@ -28,6 +31,7 @@ export default {
     AddNoteToTicket,
     // GetSystemData,
     EditNote,
+    CreateOrganisation,
   },
 };
 </script>

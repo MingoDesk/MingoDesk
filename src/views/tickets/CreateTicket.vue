@@ -13,10 +13,10 @@
 </template>
 
 <script>
-import { createTicket } from "../../composables/ticketController";
+import { createTicket } from '../../composables/ticketController';
 
 export default {
-  name: "CreateTicket",
+  name: 'CreateTicket',
   setup() {
     const { data, submitted, error, fetching } = createTicket();
 
@@ -29,7 +29,7 @@ export default {
   },
   data() {
     return {
-      name: "CreateTicket.vue",
+      name: 'CreateTicket.vue',
     };
   },
 };

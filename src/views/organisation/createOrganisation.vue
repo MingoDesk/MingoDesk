@@ -1,9 +1,7 @@
 <template>
-  <section class="CreateTicket">
+  <section class="create-organisation">
     <form @submit.prevent="submitted">
-      <label for="ticketId">ticketId</label>
-      <input v-model="val" type="text" name="ticketId" />
-      <button>Reply to the ticket</button>
+      <button>Create a new organisation</button>
     </form>
     <div v-if="fetching"><h2>Sending...</h2></div>
     <div class="result">
@@ -15,24 +13,23 @@
 </template>
 
 <script>
-import { replyTicket } from '../../composables/ticketController';
+import { createOrganisation } from '../../composables/organisationController';
 
 export default {
-  name: 'ReplyTicket',
+  name: 'CreateOrganisation',
   setup() {
-    const { data, val, submitted, error, fetching } = replyTicket();
+    const { data, submitted, error, fetching } = createOrganisation();
 
     return {
       data,
       submitted,
       error,
       fetching,
-      val,
     };
   },
   data() {
     return {
-      name: 'ReplyTicket.vue',
+      name: 'CreateOrganisation.vue',
     };
   },
 };
