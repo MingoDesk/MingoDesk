@@ -1,5 +1,5 @@
 import { toRefs, reactive, ref } from 'vue';
-import { post, patch } from './axiosController';
+import { post, patch, get } from './axiosController';
 
 function createTicket() {
   let ticket = reactive({ data: [], error: null, fetching: false });
@@ -35,12 +35,30 @@ function replyTicket() {
       },
       { withCredentials: true }
     );
-    postData();
+    await postData();
     ticket.data = response;
     ticket.error = error;
     ticket.fetching = fetching;
   };
   return { submitted, ...toRefs(ticket), val };
+}
+
+function getUnnasigedTickets() {
+  let tickets = reactive({ data: [], error: null, fetching: false });
+  const val = ref('');
+
+  const submitted = async () => {
+    const { response, errors, getData, fetching } = get(
+      'http://localhost:1928/api/tickets/unassigned/feed',
+      {},
+      { withCredentials: true }
+    );
+    await getData();
+    tickets.data = response;
+    tickets.error = errors;
+    tickets.fetching = fetching;
+  };
+  return { submitted, ...toRefs(tickets), val };
 }
 
 function addNoteToTicket() {
@@ -58,7 +76,7 @@ function addNoteToTicket() {
       },
       { withCredentials: true }
     );
-    postData();
+    await postData();
     ticket.data = response;
     ticket.error = error;
     ticket.fetching = fetching;
@@ -89,4 +107,10 @@ function editNote() {
   return { submitted, ...toRefs(ticket), ticketId, noteId };
 }
 
-export { createTicket, replyTicket, addNoteToTicket, editNote };
+export {
+  createTicket,
+  replyTicket,
+  addNoteToTicket,
+  editNote,
+  getUnnasigedTickets,
+};

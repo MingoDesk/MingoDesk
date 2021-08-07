@@ -49,8 +49,7 @@ function get(baseUrl, params, options) {
   const getData = async () => {
     try {
       const res = await axios.get(baseUrl, {
-        params,
-        options,
+        ...options,
       });
       state.response = res.data;
     } catch (error) {

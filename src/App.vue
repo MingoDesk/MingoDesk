@@ -12,6 +12,7 @@
   <AddNoteToTicket />
   <EditNote />
   <CreateOrganisation />
+  <GetUnnasignedTickets />
 </template>
 
 <script>
@@ -20,6 +21,7 @@ import ReplyTicket from './views/tickets/ReplyTicket';
 import AddNoteToTicket from './views/tickets/notes/AddNoteToTicket';
 import EditNote from './views/tickets/notes/EditNote';
 import CreateOrganisation from './views/organisation/createOrganisation.vue';
+import GetUnnasignedTickets from './views/tickets/GetUnnasignedTickets.vue';
 
 //import GetSystemData from './views/system/GetSystemData';
 
@@ -32,6 +34,7 @@ export default {
     // GetSystemData,
     EditNote,
     CreateOrganisation,
+    GetUnnasignedTickets,
   },
 };
 </script>
