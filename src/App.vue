@@ -12,21 +12,12 @@ interface IColors {
   [key: string]: string;
 }
 
-defineComponent({
+export default defineComponent({
   components: {
     Tag,
   },
 });
-export default class App extends Vue {
-  data(): IColors {
-    return {
-      purple: '#5e179d',
-      purpleBg: 'rgba(123, 76, 164, 0.24)',
-      lightBlue: '#8bb6ee',
-      lightBlueBg: ' rgba(139, 182, 238, 0.24)',
-    };
-  }
-}
+
 </script>
 
 <style lang="scss">
