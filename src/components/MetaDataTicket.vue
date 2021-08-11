@@ -1,57 +1,59 @@
 <template>
   <div class="ticket-metadata">
     <div class="upper">
-      <p class="subject">{{ metadata.subject }}</p>
-      <p class="created-at">{{ metadata.createdAt }}</p>
+      <h3>{{ metadata.subject }}</h3>
+      <p>{{ metadata.createdAt }}</p>
     </div>
     <div class="lower">
       <p>{{ metadata.preview }}</p>
+      <li :for="tags in metadata.tags" :key="metadata.tags">
+        <Tag :text="tags.text" :bgColor="tags.bgColor" :color="tags.textColor" />
+      </li>
     </div>
-    <li :for="tags in metadata.tags" :key="metadata.tags">
-      <Tag :text="tags.text" :bgColor="tags.bgColor" :color="tags.textColor" />
-    </li>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import Tag from './Tag.vue';
+import { TicketStatus, ITicketMetaData } from '../helpers/types/ticket';
 
-export enum TicketStatus {
-  open = 1,
-  snoozed,
-  closed,
-}
-
-export interface IMessage {
-  authorId: string;
-  author: string;
-  text: string;
-  createdAt: Date;
-  id: string;
-}
-
-export interface ITicket {
-  authorId: string;
-  author: string;
-  status: TicketStatus;
-  assignee?: string;
-  createdAt: Date;
-  isStarred: boolean;
-  tags: string[];
-  labels: string[];
-  isUpdated: boolean;
-  preview: string;
+interface ITicketStyle {
+  backgroundColor: string;
+  sideColor: string;
 }
 
 export default defineComponent({
+  name: 'MetaDataTicket',
+  components: { Tag },
   props: {
-    metadata: { type: Object as PropType<ITicket>, required: true },
+    metadata: { type: Object as PropType<ITicketMetaData>, required: true },
   },
-  components: {
-    Tag,
+  setup(props): Record<string, unknown> {
+    const ticketStyle: ITicketStyle = {
+      backgroundColor: '#636DEA',
+      sideColor: '#636DEA',
+    };
+    if (props.metadata.status == TicketStatus.updated) {
+      ticketStyle.sideColor = '#4346D4';
+    }
+
+    return { ...ticketStyle };
   },
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.ticket-metadata {
+  border-radius: 8px;
+  min-width: 12rem;
+  min-height: 5rem;
+  background: v-bind(backgroundColor);
+}
+
+.ticket-metadata::before {
+  border-left: v-bind(sideColor);
+  height: 100%;
+  width: 20px;
+}
+</style>

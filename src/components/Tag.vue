@@ -1,11 +1,11 @@
 <template>
   <div class="tag" :style="{ backgroundColor: bgColor }">
-    <p :style="{ color: textColor }">{{ text }}</p>
+    <p>{{ text }}</p>
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script lang="ts">
+import { defineComponent, $ref } from 'vue';
 
 export default defineComponent({
   name: 'Tag',
@@ -13,6 +13,12 @@ export default defineComponent({
     text: String,
     textColor: { type: String, required: false },
     bgColor: { type: String, required: false },
+  },
+  setup(props) {
+    console.log(props);
+    const color = $ref(props.textColor);
+    const backgroundColor = $ref(props.bgColor);
+    return { color, backgroundColor };
   },
 });
 </script>
@@ -27,7 +33,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-  background: c.$lightBlueBg;
-  color: c.$lightBlue;
+  background: v-bind(backgroundColor);
+  color: v-bind(textColor);
 }
 </style>

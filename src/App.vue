@@ -1,23 +1,34 @@
 <template>
-  <Tag text="T1" />
-  <Tag text="T2" :bgColor="purpleBg" :textColor="purple" />
-  <Tag text="T3" />
+  <Tag text="T1" bgColor="blue" textColor="white" />
+  <MetaDataTicket :metadata="metadata" />
 </template>
 
 <script lang="ts">
-import Vue, { defineComponent } from 'vue';
+import { defineComponent } from 'vue';
 import Tag from './components/Tag.vue';
-
-interface IColors {
-  [key: string]: string;
-}
+import MetaDataTicket from './components/MetaDataTicket.vue';
 
 export default defineComponent({
   components: {
     Tag,
+    MetaDataTicket,
+  },
+  setup() {
+    const metadata = {
+      authorId: '1234',
+      author: 'Eddie',
+      status: 2,
+      assignee: 'userId',
+      createdAt: Date.now(),
+      isStarred: true,
+      tags: ['T2'],
+      labels: ['Cool'],
+      previewText: 'This is a preview...',
+    };
+
+    return { metadata };
   },
 });
-
 </script>
 
 <style lang="scss">
