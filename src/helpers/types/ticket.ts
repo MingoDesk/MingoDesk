@@ -23,6 +23,12 @@ export interface IPersonnelView {
   isNote?: true;
 }
 
+export interface ILabel {
+  text: string;
+  textColor?: string;
+  bgColor?: string;
+}
+
 export interface ITicketMetaData {
   authorId: string;
   author: string;
@@ -30,8 +36,8 @@ export interface ITicketMetaData {
   assignee?: string;
   createdAt: Date;
   isStarred: boolean;
-  tags: string[];
-  labels: string[];
+  tags: ILabel[];
+  labels: ILabel[];
   previewText: string;
 }
 

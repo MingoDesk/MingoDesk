@@ -1,24 +1,24 @@
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 interface IReturn {
-  fetching: Boolean;
-  errors: any;
-  response: AxiosResponse['data'];
+  fetching: boolean;
+  errors?: any;
+  response?: AxiosResponse['data'];
 }
 
 const get = async (baseUrl: string, params: AxiosRequestConfig): Promise<IReturn> => {
-  const state = reactive<IReturn>({
-    response: [],
+  const state: IReturn = {
+    response: {},
     errors: null,
     fetching: true,
-  });
+  };
 
   try {
-    const res = await axios.get(baseUrl, params);
+    const res = await axios.get(baseUrl, { ...params });
     state.response = res.data;
   } catch (error) {
-    state.errors = state.errors;
+    state.errors = error;
   } finally {
     state.fetching = false;
   }
@@ -33,7 +33,7 @@ const post = async (url: string, params: AxiosRequestConfig): Promise<IReturn> =
     const res = await axios.post(url, params.params, params.data);
     state.response = res.data;
   } catch (error) {
-    state.errors = state.errors;
+    state.errors = error;
   } finally {
     state.fetching = false;
   }
@@ -47,7 +47,7 @@ const patch = async (url: string, params: AxiosRequestConfig): Promise<IReturn> 
     const res = await axios.patch(url, params.params, params.data);
     state.response = res.data;
   } catch (error) {
-    state.errors = state.errors;
+    state.errors = error;
   } finally {
     state.fetching = false;
   }
