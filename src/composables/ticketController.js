@@ -9,6 +9,7 @@ function createTicket() {
       'http://localhost:1928/api/tickets/new',
       {
         text: 'This ticket was created from the front-end',
+        subject: 'My god there is a thing',
       },
       { withCredentials: true }
     );
