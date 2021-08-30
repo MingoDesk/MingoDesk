@@ -1,22 +1,43 @@
 <template>
+  <header>
+    <div class="heading">
+      <h1>Unassigned tickets</h1>
+      <p v-if="!metadata || !metadata.data.length">Currently you have 0 unassigned tickets</p>
+      <p v-if="metadata && metadata.data.length">Currently you have {{ metadata.data.length }} unassigned tickets</p>
+    </div>
+    <div class="controls">
+      <Filter />
+      <Search />
+      <Logout />
+    </div>
+  </header>
   <ul v-if="metadata && metadata.data.length">
     <li v-for="data in metadata.data" :key="data._id">
       <MetaDataTicket :metadata="data" />
     </li>
   </ul>
+  <LoginWidget />
 </template>
 
 <script lang="ts">
 import { getUnassignedTickets } from '../helpers/api/tickets/ticketController';
-import { defineComponent, onMounted, PropType, ref, toRefs } from 'vue';
+import { defineComponent, onMounted, PropType, ref } from 'vue';
 import MetaDataTicket from '../components/MetaDataTicket.vue';
 import { ITicketMetaData } from '../helpers/types/ticket';
 import { login } from '../helpers/api/user/userController';
+import Search from '../components/Search.vue';
+import Filter from '../components/Filter.vue';
+import Logout from '../components/Logout.vue';
+import LoginWidget from '../components/LoginWidget.vue';
 
 export default defineComponent({
   name: 'Unassigned',
   components: {
     MetaDataTicket,
+    Search,
+    Filter,
+    Logout,
+    LoginWidget,
   },
   props: {
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
@@ -25,15 +46,24 @@ export default defineComponent({
     let responseRef = ref(null);
 
     onMounted(async () => {
-      const { response, errors } = await getUnassignedTickets();
-
-      if (errors && errors.value.response.status === 403) {
-        login();
-      }
-      responseRef.value = response;
+      await getData();
     });
 
-    console.log(responseRef);
+    const getData = async () => {
+      const { response, errors } = await getUnassignedTickets();
+
+      if (errors && errors.response.status === 403) {
+        login();
+      }
+      responseRef.value = { ...response };
+    };
+
+    const getDataAtInterval = (seconds: number) => {
+      setInterval(getData, seconds * 1000);
+    };
+
+    getDataAtInterval(50);
+
     return { metadata: responseRef };
   },
 });
@@ -42,10 +72,42 @@ export default defineComponent({
 <style lang="scss">
 @use '../scss/colors' as c;
 
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+
+  .heading {
+    p {
+      margin: 0.5rem 0;
+    }
+  }
+
+  .controls {
+    display: flex;
+    .search,
+    .logout {
+      margin-left: 1rem;
+    }
+  }
+}
+
 body {
   background: c.$bg;
   margin: 0;
   padding: 0;
+}
+
+h1 {
+  color: c.$text;
+  margin-bottom: 0em;
+}
+
+p {
+  color: c.$alt-text;
+  margin: 0.5em 0 4.8em 0em;
 }
 
 ul {

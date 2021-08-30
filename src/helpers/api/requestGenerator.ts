@@ -1,4 +1,3 @@
-import { reactive, ref } from 'vue';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 interface IReturn {
@@ -27,7 +26,11 @@ const get = async (baseUrl: string, params: AxiosRequestConfig): Promise<IReturn
 };
 
 const post = async (url: string, params: AxiosRequestConfig): Promise<IReturn> => {
-  const state = reactive<IReturn>({ response: [], errors: null, fetching: true });
+  const state: IReturn = {
+    response: {},
+    errors: null,
+    fetching: true,
+  };
 
   try {
     const res = await axios.post(url, params.params, params.data);
@@ -41,7 +44,7 @@ const post = async (url: string, params: AxiosRequestConfig): Promise<IReturn> =
   return state;
 };
 const patch = async (url: string, params: AxiosRequestConfig): Promise<IReturn> => {
-  const state = reactive<IReturn>({ response: [], errors: null, fetching: true });
+  const state: IReturn = { response: [], errors: null, fetching: true };
 
   try {
     const res = await axios.patch(url, params.params, params.data);

@@ -35,9 +35,6 @@ export default defineComponent({
   props: {
     metadata: { type: Object as PropType<ITicketMetaData>, required: true },
   },
-  mounted() {
-    console.log("we're in");
-  },
   setup(props): Record<string, unknown> {
     const ticketStyle: ITicketStyle = {
       backgroundColor: '#232443',
@@ -95,7 +92,7 @@ export default defineComponent({
 
   p {
     font-size: 1em;
-    color: c.$textDarkened;
+    color: c.$alt-text;
   }
 
   .lower,

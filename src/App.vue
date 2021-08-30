@@ -97,6 +97,7 @@ export default defineComponent({});
 
 #nav {
   grid-area: nav;
+  margin-top: 5%;
 
   #logo {
     width: 10rem;
@@ -108,6 +109,7 @@ export default defineComponent({});
   #label3 {
     margin-top: 2rem;
   }
+
   .label {
     display: flex;
     padding-left: 2rem;
@@ -133,7 +135,7 @@ export default defineComponent({});
 
     a {
       font-weight: semi-bold;
-      color: c.$textDarkened;
+      color: c.$alt-text;
       text-decoration: none;
       padding-left: 2rem;
 
