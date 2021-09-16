@@ -1,9 +1,20 @@
 import { baseUrl } from '../../../config/config.json';
+import { get, IReturn } from '../requestGenerator';
+import { IUserPermissions } from '../../../@types/userPermissions';
 
-export const login = (): void => {
-  window.location.replace(`${baseUrl}/login`);
-};
+export interface User {
+  permissions: IUserPermissions['permissions'];
+  systemOrganisationId: string;
+  organisationId: string | null;
+  sub: string;
+  email: string;
+  email_verified: boolean;
+  locale: string;
+  name: string;
+  picture: string;
+}
 
-export const logout = () => {
-  window.location.replace(`${baseUrl}/logout`);
+export const getUser = async (): Promise<IReturn> => {
+  const user = await get(`${baseUrl}/user/`, { withCredentials: true });
+  return user;
 };

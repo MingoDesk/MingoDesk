@@ -41,6 +41,7 @@ export default defineComponent({
   height: 2.5rem;
   background: c.$bg-alt;
   border-radius: 4px;
+  text-decoration: none;
 
   p {
     margin: 0;

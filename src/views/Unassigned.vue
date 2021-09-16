@@ -11,24 +11,25 @@
       <Logout />
     </div>
   </header>
+  <LoginWidget v-if="!user" />
   <ul v-if="metadata && metadata.data.length">
     <li v-for="data in metadata.data" :key="data._id">
       <MetaDataTicket :metadata="data" />
     </li>
   </ul>
-  <LoginWidget />
 </template>
 
 <script lang="ts">
 import { getUnassignedTickets } from '../helpers/api/tickets/ticketController';
 import { defineComponent, onMounted, PropType, ref } from 'vue';
 import MetaDataTicket from '../components/MetaDataTicket.vue';
-import { ITicketMetaData } from '../helpers/types/ticket';
-import { login } from '../helpers/api/user/userController';
+import { ITicketMetaData } from '../@types/ticket';
 import Search from '../components/Search.vue';
 import Filter from '../components/Filter.vue';
 import Logout from '../components/Logout.vue';
 import LoginWidget from '../components/LoginWidget.vue';
+import { getUser } from '../helpers/api/user/userController';
+import { IReturn } from '../helpers/api/requestGenerator';
 
 export default defineComponent({
   name: 'Unassigned',
@@ -44,16 +45,26 @@ export default defineComponent({
   },
   setup() {
     let responseRef = ref(null);
+    let tries = 0;
+    let user = ref<IReturn | null>(null);
 
     onMounted(async () => {
-      await getData();
+      user.value = await getUser();
+
+      if (user.value.errors && user.value.errors.status === 500) {
+        user.value = null;
+        return;
+      } else {
+        await getData();
+      }
     });
 
     const getData = async () => {
-      const { response, errors } = await getUnassignedTickets();
+      if (tries > 3) return;
 
+      const { response, errors } = await getUnassignedTickets();
       if (errors && errors.response.status === 403) {
-        login();
+        tries++;
       }
       responseRef.value = { ...response };
     };
@@ -62,9 +73,10 @@ export default defineComponent({
       setInterval(getData, seconds * 1000);
     };
 
-    getDataAtInterval(50);
+    console.log(responseRef);
 
-    return { metadata: responseRef };
+    getDataAtInterval(50);
+    return { metadata: responseRef.value, user };
   },
 });
 </script>

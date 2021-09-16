@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import Tag from './MetaDataTag.vue';
-import { TicketStatus, ITicketMetaData } from '../helpers/types/ticket';
+import { TicketStatus, ITicketMetaData } from '../@types/ticket';
 
 interface ITicketStyle {
   backgroundColor: string;

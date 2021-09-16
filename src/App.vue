@@ -78,6 +78,12 @@ export default defineComponent({});
   -moz-osx-font-smoothing: grayscale;
 }
 
+body,
+body::before,
+body::after {
+  box-sizing: border-box;
+}
+
 .app-container {
   display: grid;
   grid-template-columns: 15% 85%;
