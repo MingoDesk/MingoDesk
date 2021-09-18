@@ -11,7 +11,7 @@
       <Logout />
     </div>
   </header>
-  <LoginWidget v-if="!user" />
+  <LoginWidget v-if="!user || user.errors" />
   <ul v-if="metadata && metadata.data.length">
     <li v-for="data in metadata.data" :key="data._id">
       <MetaDataTicket :metadata="data" />
@@ -53,9 +53,8 @@ export default defineComponent({
 
       if (user.value.errors && user.value.errors.status === 500) {
         user.value = null;
-        return;
       } else {
-        await getData();
+        getData();
       }
     });
 
