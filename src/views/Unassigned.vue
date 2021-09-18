@@ -3,7 +3,7 @@
     <div class="heading">
       <h1>Unassigned tickets</h1>
       <p v-if="!metadata || !metadata.data.length">Currently you have 0 unassigned tickets</p>
-      <p v-if="metadata && metadata.data.length">Currently you have {{ metadata.data.length }} unassigned tickets</p>
+      <p v-else>Currently you have {{ metadata.data.length }} unassigned tickets</p>
     </div>
     <div class="controls">
       <Filter />
@@ -11,7 +11,6 @@
       <Logout />
     </div>
   </header>
-  <LoginWidget v-if="!user || user.errors" />
   <ul v-if="metadata && metadata.data.length">
     <li v-for="data in metadata.data" :key="data._id">
       <MetaDataTicket :metadata="data" />
@@ -27,9 +26,6 @@ import { ITicketMetaData } from '../@types/ticket';
 import Search from '../components/Search.vue';
 import Filter from '../components/Filter.vue';
 import Logout from '../components/Logout.vue';
-import LoginWidget from '../components/LoginWidget.vue';
-import { getUser } from '../helpers/api/user/userController';
-import { IReturn } from '../helpers/api/requestGenerator';
 
 export default defineComponent({
   name: 'Unassigned',
@@ -38,7 +34,6 @@ export default defineComponent({
     Search,
     Filter,
     Logout,
-    LoginWidget,
   },
   props: {
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
@@ -46,17 +41,6 @@ export default defineComponent({
   setup() {
     let responseRef = ref(null);
     let tries = 0;
-    let user = ref<IReturn | null>(null);
-
-    onMounted(async () => {
-      user.value = await getUser();
-
-      if (user.value.errors && user.value.errors.status === 500) {
-        user.value = null;
-      } else {
-        getData();
-      }
-    });
 
     const getData = async () => {
       if (tries > 3) return;
@@ -72,10 +56,12 @@ export default defineComponent({
       setInterval(getData, seconds * 1000);
     };
 
-    console.log(responseRef);
+    onMounted(async () => {
+      getData();
+    });
 
     getDataAtInterval(50);
-    return { metadata: responseRef.value, user };
+    return { metadata: responseRef };
   },
 });
 </script>

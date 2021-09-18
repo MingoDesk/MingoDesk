@@ -21,7 +21,7 @@ import { baseUrl } from '../config/config.json';
 export default defineComponent({
   name: 'logout',
   setup() {
-    const logoutUrl = `${baseUrl}/logout`;
+    const logoutUrl = `${baseUrl}/auth/logout`;
 
     return { logoutUrl };
   },

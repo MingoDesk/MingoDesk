@@ -1,13 +1,12 @@
 import { get, patch, post, IReturn } from '../requestGenerator';
 import { baseUrl } from '../../../config/config.json';
-import { toRefs } from 'vue';
 
 export const getTicket = async (ticketId: string): Promise<IReturn> => {
   const data = await get(`${baseUrl}/tickets/`, { params: { ticketId }, withCredentials: true });
   return data;
 };
 
-export const getUnassignedTickets = async () => {
+export const getUnassignedTickets = async (): Promise<IReturn> => {
   const data = await get(`${baseUrl}/tickets/unassigned/feed`, { withCredentials: true });
   return { ...data };
 };

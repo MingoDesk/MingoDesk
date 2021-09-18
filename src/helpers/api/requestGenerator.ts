@@ -2,6 +2,7 @@ import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 interface IReturn {
   fetching: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors?: any;
   response?: AxiosResponse['data'];
 }

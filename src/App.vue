@@ -56,16 +56,41 @@
         <li><router-link to="/about">Alexander B</router-link></li>
       </ul>
     </aside>
-    <div id="route">
+    <div id="login-widget-container" v-if="!user || user.errors" class="scroll">
+      <div id="login-widget-inner-container">
+        <LoginWidget />
+      </div>
+    </div>
+    <div v-else id="route" class="scroll">
       <router-view />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
+import { IReturn } from './helpers/api/requestGenerator';
+import { getUser } from './helpers/api/user/userController';
+import LoginWidget from './components/LoginWidget.vue';
 
-export default defineComponent({});
+let user = ref<IReturn | null>(null);
+
+export default defineComponent({
+  components: {
+    LoginWidget,
+  },
+  setup() {
+    onMounted(async () => {
+      user.value = await getUser();
+
+      if (user.value.errors && user.value.errors.status === 500) {
+        user.value = null;
+      }
+    });
+
+    return { user };
+  },
+});
 </script>
 
 <style lang="scss" scoped>
@@ -93,6 +118,32 @@ body::after {
     'nav  route route route route'
     'nav  route route route route'
     'nav  route route route route';
+}
+
+#login-widget-container {
+  position: fixed;
+  top: 0%;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100vh;
+  overflow-x: hidden;
+  background: rgba(0, 0, 0, 0.835);
+  overflow: hidden;
+
+  #login-widget-inner-container {
+    margin-top: 7%;
+  }
+
+  #login-widget-container.scroll {
+    overflow-y: auto;
+  }
+
+  .login-contianer {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
 }
 
 #route {

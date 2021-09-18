@@ -76,6 +76,7 @@ export default defineComponent({
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
+  margin: auto;
 
   #password,
   #email {
