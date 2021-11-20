@@ -1,11 +1,9 @@
 <template>
   <header>
     <div class="heading">
-      <h1>Unassigned tickets</h1>
-      <p v-if="!metadata || !metadata || !metadata.data || !metadata.data.length">
-        Currently you have 0 unassigned tickets
-      </p>
-      <p v-else>Currently you have {{ metadata.data.length }} unassigned tickets</p>
+      <h1>Your tickets</h1>
+      <p v-if="!metadata || !metadata.data || !metadata.data.length">Currently you have 0 tickets</p>
+      <p v-else>Currently you have {{ metadata.data.length }} tickets</p>
     </div>
     <div class="controls">
       <Filter />
@@ -22,14 +20,15 @@
     <div class="inner-container">
       <div class="card-container">
         <div class="card">
-          <h1>There aren't any<br />unassigned tickets 🥳</h1>
+          <h1>You haven't created any<br />tickets yet</h1>
           <p>
-            Well done! You currently don't have any unassigned tickets! Perhaps, now is a good time to check
-            <a href="#">analytics?</a>
+            Hi Samantha, welcome to MingoDesk! To create a ticket, click the big blue button below or visit the
+            <a href="#">FAQ?</a> if you need any assistance
           </p>
         </div>
+        <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
         <div class="square" aria-hidden="true"></div>
-        <div class="square" aria-hidden="true"></div>
+        <div class="square" id="blue" aria-hidden="true"></div>
       </div>
     </div>
   </section>
@@ -44,21 +43,26 @@ import Filter from '../components/Filter.vue';
 import Logout from '../components/Logout.vue';
 import { baseUrl } from '../config/config.json';
 import { get, IReturn } from '../helpers/api/requestGenerator';
+import { user } from '../helpers/store/userStore';
+import Cta from '../components/Cta.vue';
+import { createTicket } from '../helpers/api/tickets/ticketController';
 
 let tries: Ref<number> = ref(0);
-let unassignedTickets: Ref<IReturn | null> = ref(null);
+let authoredTickets: Ref<IReturn | null> = ref(null);
 
-const getUnassignedTickets = async (): Promise<IReturn> => {
-  const data = await get(`${baseUrl}/tickets/unassigned/feed`, { withCredentials: true });
+const getPersonalTickets = async (): Promise<IReturn> => {
+  const data = await get(`${baseUrl}/tickets/authored/feed?userId=${user.value!.response.user.providerId}`, {
+    withCredentials: true,
+  });
   return { ...data };
 };
 
 const getData = async () => {
   if (tries.value > 3) return;
-  const { response, errors } = await getUnassignedTickets();
+  const { response, errors } = await getPersonalTickets();
   if (errors && errors.response.status === 403) return tries.value++;
 
-  unassignedTickets.value = { ...response };
+  authoredTickets.value = { ...response };
 };
 
 const getDataAtInterval = (seconds: number) => {
@@ -66,12 +70,13 @@ const getDataAtInterval = (seconds: number) => {
 };
 
 export default defineComponent({
-  name: 'Unassigned',
+  name: 'Your-tickets',
   components: {
     MetaDataTicket,
     Search,
     Filter,
     Logout,
+    Cta,
   },
   props: {
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
@@ -82,7 +87,13 @@ export default defineComponent({
     });
 
     getDataAtInterval(50);
-    return { metadata: unassignedTickets };
+    return { metadata: authoredTickets };
+  },
+  methods: {
+    async handleCreateTicket() {
+      const newTicket = await createTicket('This ticket was created from the front-end', 'Front-end ticket');
+      console.log(newTicket);
+    },
   },
 });
 </script>
@@ -161,9 +172,9 @@ li {
     z-index: -50;
   }
 
-  .square:nth-child(2) {
-    top: 50%;
-    right: -3%;
+  .square#blue {
+    top: 34%;
+    right: -8%;
   }
 
   .square:nth-child(3) {
@@ -171,7 +182,6 @@ li {
     height: 11.25rem;
     background: #6a6ce1;
     transform: rotate(40deg);
-
     top: -13%;
     left: -5%;
   }
@@ -182,6 +192,10 @@ li {
   width: 100%;
   max-width: 30rem;
   pointer-events: initial;
+
+  .cta {
+    margin-top: 10%;
+  }
 }
 
 .inner-container {

@@ -21,6 +21,7 @@
     </form>
     <OAuthCta msg="Sign in with Google" method="google" @click="handleGoogleLogin" />
     <OAuthCta msg="Sign in with Office 365" method="office365" @click="handleSlackLogin" />
+    <OAuthCta msg="Sign in with Slack" method="slack" @click="handleSlackLogin" />
     <div class="tos">
       <p>
         MingoDesk only collects the necessary data to run it's services, third party login methods may store personal

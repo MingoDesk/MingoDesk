@@ -29,8 +29,8 @@ export const replyTicket = async (ticketId: string, message: string): Promise<IR
   return data;
 };
 
-export const createTicket = async (text: string): Promise<IReturn> => {
-  const data = await post(`${baseUrl}/new`, { params: { text }, withCredentials: true });
+export const createTicket = async (text: string, subject: string): Promise<IReturn> => {
+  const data = await post(`${baseUrl}/tickets/new`, { text, subject });
   return data;
 };
 

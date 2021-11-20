@@ -28,6 +28,43 @@
           />
         </g>
       </svg>
+      <svg
+        v-if="method === 'slack'"
+        id="slack-new-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20.958"
+        height="21"
+        viewBox="0 0 20.958 21"
+      >
+        <path
+          id="Path_29"
+          data-name="Path 29"
+          d="M7.684,0a2.1,2.1,0,0,0,0,4.2h2.1V2.1A2.1,2.1,0,0,0,7.684,0h0m0,5.6H2.1a2.1,2.1,0,0,0,0,4.2H7.684a2.1,2.1,0,0,0,0-4.2Z"
+          fill="#36c5f0"
+          fill-rule="evenodd"
+        />
+        <path
+          id="Path_30"
+          data-name="Path 30"
+          d="M20.958,7.7a2.1,2.1,0,1,0-4.192,0V9.8h2.1A2.1,2.1,0,0,0,20.958,7.7Zm-5.589,0V2.1a2.1,2.1,0,1,0-4.191,0V7.7a2.1,2.1,0,1,0,4.191,0Z"
+          fill="#2eb67d"
+          fill-rule="evenodd"
+        />
+        <path
+          id="Path_31"
+          data-name="Path 31"
+          d="M13.273,21a2.1,2.1,0,0,0,0-4.2h-2.1v2.1A2.1,2.1,0,0,0,13.273,21Zm0-5.6h5.589a2.1,2.1,0,0,0,0-4.2H13.274a2.1,2.1,0,0,0,0,4.2Z"
+          fill="#ecb22e"
+          fill-rule="evenodd"
+        />
+        <path
+          id="Path_32"
+          data-name="Path 32"
+          d="M0,13.3a2.1,2.1,0,1,0,4.192,0V11.2H2.1A2.1,2.1,0,0,0,0,13.3Zm5.589,0v5.6a2.1,2.1,0,1,0,4.191,0V13.3a2.1,2.1,0,1,0-4.191,0h0"
+          fill="#e01e5a"
+          fill-rule="evenodd"
+        />
+      </svg>
 
       <svg
         v-if="method === 'office365'"

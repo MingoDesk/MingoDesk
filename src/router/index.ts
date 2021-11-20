@@ -1,11 +1,11 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import Unassigned from '../views/Unassigned.vue';
+import AppHome from '../views/AppHome.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
-    component: Unassigned,
+    component: AppHome,
   },
   {
     path: '/about',
