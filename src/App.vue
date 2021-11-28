@@ -13,21 +13,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted } from 'vue';
 import { getUser } from './helpers/api/user/userController';
 import LoginWidget from './components/LoginWidget.vue';
 import { user, userPermissions, nav } from './helpers/store/userStore';
 import { getNav } from './helpers/getNav';
 import Navigation from './components/Nav.vue';
-import { post, IReturn } from './helpers/api/requestGenerator';
-import { baseUrl } from './config/config.json';
-let val = ref();
-
-export const getCdnToken = async (): Promise<IReturn> => {
-  const user = await post(`${baseUrl}/auth/content-token`, { ticketId: '61996f573fb663001dc43287' });
-  console.log(user);
-  return user;
-};
 
 export default defineComponent({
   components: {
@@ -41,8 +32,6 @@ export default defineComponent({
       if (user.value.errors && user.value.errors.status !== 200) {
         user.value = null;
       }
-
-      val.value = await getCdnToken();
     });
 
     if (user.value && user.value.response) {
@@ -52,8 +41,6 @@ export default defineComponent({
       // @ts-ignore
       nav.value = getNav(userPermissions.value);
     }
-    console.log(nav.value);
-    console.log(val.value);
     return { user };
   },
 });
