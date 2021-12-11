@@ -106,7 +106,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use '../scss/colors' as c;
+@use '../../scss/colors' as c;
 
 .oauth-cta {
   background-color: c.$oauth-bg;

@@ -1,22 +1,14 @@
 <template>
-  <header>
-    <div class="heading">
-      <h1>Your tickets</h1>
-      <p v-if="!metadata || !metadata.data || !metadata.data.length">Currently you have 0 tickets</p>
-      <p v-else>Currently you have {{ metadata.data.length }} tickets</p>
-    </div>
-    <div class="controls">
-      <Filter />
-      <Search />
-      <Logout />
-    </div>
-  </header>
+  <Header :subheading="subheading" routeName="Your tickets" />
   <ul v-if="metadata && metadata.data && metadata.data.length">
     <li v-for="data in metadata.data" :key="data._id">
       <MetaDataTicket :metadata="data" />
     </li>
   </ul>
-  <section v-else class="no-tickets-container">
+  <section v-if="creatingTicket">
+    <CreateTicketModal />
+  </section>
+  <section v-else-if="!metadata || !metadata.data || creatingTicket" class="no-tickets-container">
     <div class="inner-container">
       <div class="card-container">
         <div class="card">
@@ -36,22 +28,24 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
-import MetaDataTicket from '../components/MetaDataTicket.vue';
+import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
+import CreateTicketModal from '../components/tickets/CreateTicketModal.vue';
 import { ITicketMetaData } from '../@types/ticket';
-import Search from '../components/Search.vue';
-import Filter from '../components/Filter.vue';
-import Logout from '../components/Logout.vue';
 import { baseUrl } from '../config/config.json';
 import { get, IReturn } from '../helpers/api/requestGenerator';
 import { user } from '../helpers/store/userStore';
-import Cta from '../components/Cta.vue';
+import Cta from '../components/buttons/Cta.vue';
 import { createTicket } from '../helpers/api/tickets/ticketController';
+import Header from '../components/Header.vue';
 
-let tries: Ref<number> = ref(0);
-let authoredTickets: Ref<IReturn | null> = ref(null);
+const tries: Ref<number> = ref(0);
+const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
+const subheading: Ref<string> = ref(`Currently you have 0 tickets`);
+const creatingTicket: Ref<boolean> = ref(false);
 
 const getPersonalTickets = async (): Promise<IReturn> => {
-  const data = await get(`${baseUrl}/tickets/authored/feed?userId=${user.value!.response.user.providerId}`, {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const data = await get(`${baseUrl}/tickets/authored/feed/${user.value!.response.user.providerId}`, {
     withCredentials: true,
   });
   return { ...data };
@@ -73,26 +67,35 @@ export default defineComponent({
   name: 'Your-tickets',
   components: {
     MetaDataTicket,
-    Search,
-    Filter,
-    Logout,
     Cta,
+    Header,
+    CreateTicketModal,
   },
   props: {
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
   },
   setup() {
     onMounted(async () => {
-      getData();
+      await getData();
+      if (authoredTickets.value && authoredTickets.value.data && authoredTickets.value.data.length) {
+        const ticketOrTickets = authoredTickets.value.data.length < 2 ? 'ticket' : 'tickets';
+        subheading.value = `Currently you have ${authoredTickets.value.data.length} ${ticketOrTickets}`;
+      }
     });
 
     getDataAtInterval(50);
-    return { metadata: authoredTickets };
+    return {
+      metadata: authoredTickets,
+      subheading,
+      creatingTicket,
+    };
   },
   methods: {
     async handleCreateTicket() {
-      const newTicket = await createTicket('This ticket was created from the front-end', 'Front-end ticket');
-      console.log(newTicket);
+      //const newTicket = await createTicket('This ticket was created from the front-end', 'Front-end ticket');
+      //console.log(newTicket);
+      //window.location.reload();
+      creatingTicket.value = true;
     },
   },
 });

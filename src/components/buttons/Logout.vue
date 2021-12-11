@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { baseUrl } from '../config/config.json';
+import { baseUrl } from '../../config/config.json';
 
 export default defineComponent({
   name: 'logout',
@@ -29,7 +29,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use '../scss/colors' as c;
+@use '../../scss/colors' as c;
 
 .logout {
   padding: 0.3em 1em;

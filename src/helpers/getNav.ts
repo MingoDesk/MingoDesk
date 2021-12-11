@@ -28,7 +28,7 @@ export const check = (
   ref: any[]
 ): boolean => ref.every((v) => userPerms.includes(v));
 
-let nav: Navigation[] = [{ label: 'Tickets', items: ['Your tickets', 'Closed tickets'] }];
+let nav: Navigation[] = [{ label: 'Tickets', items: ['Your-tickets', 'Closed-tickets'] }];
 
 export const getNav = (
   permissions?:
@@ -45,12 +45,12 @@ export const getNav = (
     check(permissions, StaffAdmin.permissions) ||
     check(permissions, Staff.permissions)
   ) {
-    nav = [{ label: 'Customer tiers', items: ['Unassigned', 'Your tickets', 'Snoozed tickets', 'Kanban view'] }];
+    nav = [{ label: 'Customer tiers', items: ['Unassigned', 'Your-tickets', 'Snoozed-tickets', 'Kanban-view'] }];
   } else if (check(permissions, OrgUser.permissions)) {
     nav = [
       {
         label: 'Tickets',
-        items: ['Group tickets', 'Closed tickets', 'Your tickets'],
+        items: ['Group-tickets', 'Closed-tickets', 'Your-tickets'],
       },
     ];
   }

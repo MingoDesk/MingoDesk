@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
 import { getUser } from './helpers/api/user/userController';
-import LoginWidget from './components/LoginWidget.vue';
+import LoginWidget from './components/modals/LoginWidget.vue';
 import { user, userPermissions, nav } from './helpers/store/userStore';
 import { getNav } from './helpers/getNav';
 import Navigation from './components/Nav.vue';

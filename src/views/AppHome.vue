@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Staff, StaffAdmin, SysAdmin } from '../@types/userPermissions';
 import { defineComponent, computed } from 'vue';
 import { check } from '../helpers/getNav';
@@ -16,6 +16,7 @@ export default defineComponent({
   name: 'App home',
   components: {
     YourTickets,
+    Unassigned,
   },
   data() {
     const route = computed(() => {
@@ -24,6 +25,7 @@ export default defineComponent({
       if (check(userPermissions.value, Staff.permissions)) return Unassigned;
       return YourTickets;
     });
+    console.log(route.value);
     return { route };
   },
 });

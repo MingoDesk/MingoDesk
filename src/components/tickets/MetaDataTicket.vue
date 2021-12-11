@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import Tag from './MetaDataTag.vue';
-import { TicketStatus, ITicketMetaData } from '../@types/ticket';
+import { TicketStatus, ITicketMetaData } from '../../@types/ticket';
 
 interface ITicketStyle {
   backgroundColor: string;
@@ -58,7 +58,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@use '../scss/colors' as c;
+@use '../../scss/colors' as c;
 
 .ticket-metadata {
   border-radius: 8px;

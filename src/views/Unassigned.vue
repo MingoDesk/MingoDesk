@@ -1,18 +1,5 @@
 <template>
-  <header>
-    <div class="heading">
-      <h1>Unassigned tickets</h1>
-      <p v-if="!metadata || !metadata || !metadata.data || !metadata.data.length">
-        Currently you have 0 unassigned tickets
-      </p>
-      <p v-else>Currently you have {{ metadata.data.length }} unassigned tickets</p>
-    </div>
-    <div class="controls">
-      <Filter />
-      <Search />
-      <Logout />
-    </div>
-  </header>
+  <Header :subheading="subheading" routeName="Unassigned tickets" />
   <ul v-if="metadata && metadata.data && metadata.data.length">
     <li v-for="data in metadata.data" :key="data._id">
       <MetaDataTicket :metadata="data" />
@@ -37,16 +24,15 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
-import MetaDataTicket from '../components/MetaDataTicket.vue';
+import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
 import { ITicketMetaData } from '../@types/ticket';
-import Search from '../components/Search.vue';
-import Filter from '../components/Filter.vue';
-import Logout from '../components/Logout.vue';
 import { baseUrl } from '../config/config.json';
 import { get, IReturn } from '../helpers/api/requestGenerator';
+import Header from '../components/Header.vue';
 
-let tries: Ref<number> = ref(0);
-let unassignedTickets: Ref<IReturn | null> = ref(null);
+const subheading: Ref<string> = ref(`Currently you have 0 tickets`);
+const tries: Ref<number> = ref(0);
+const unassignedTickets: Ref<IReturn['response'] | null> = ref(null);
 
 const getUnassignedTickets = async (): Promise<IReturn> => {
   const data = await get(`${baseUrl}/tickets/unassigned/feed`, { withCredentials: true });
@@ -69,16 +55,18 @@ export default defineComponent({
   name: 'Unassigned',
   components: {
     MetaDataTicket,
-    Search,
-    Filter,
-    Logout,
+    Header,
   },
   props: {
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
   },
   setup() {
     onMounted(async () => {
-      getData();
+      await getData();
+      if (unassignedTickets.value && unassignedTickets.value.data && unassignedTickets.value.data.length) {
+        const ticketOrTickets = unassignedTickets.value.data.length < 2 ? 'ticket' : 'tickets';
+        subheading.value = `Currently you have ${unassignedTickets.value.data.length} ${ticketOrTickets}`;
+      }
     });
 
     getDataAtInterval(50);

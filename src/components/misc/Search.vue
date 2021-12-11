@@ -34,7 +34,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use '../scss/colors' as c;
+@use '../../scss/colors' as c;
 
 .search {
   padding: 0.3em 1em;
