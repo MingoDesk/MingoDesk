@@ -1,5 +1,6 @@
 import { get, patch, post, IReturn } from '../requestGenerator';
 import { baseUrl } from '../../../config/config.json';
+import { JSONContent } from '@tiptap/core';
 
 export const getTicket = async (ticketId: string): Promise<IReturn> => {
   const data = await get(`${baseUrl}/tickets/`, { params: { ticketId }, withCredentials: true });
@@ -29,8 +30,8 @@ export const replyTicket = async (ticketId: string, message: string): Promise<IR
   return data;
 };
 
-export const createTicket = async (text: string, subject: string): Promise<IReturn> => {
-  const data = await post(`${baseUrl}/tickets/new`, { text, subject });
+export const createTicket = async (body: JSONContent, subject: JSONContent): Promise<IReturn> => {
+  const data = await post(`${baseUrl}/tickets/new`, { body: { ...body }, subject: { ...subject } });
   return data;
 };
 

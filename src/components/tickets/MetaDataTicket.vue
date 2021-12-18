@@ -2,7 +2,7 @@
   <div class="ticket-metadata">
     <div class="container">
       <div class="upper">
-        <h3>{{ metadata.subject }}</h3>
+        <editor-content :editor="subjectEditor" class="subject-header" />
         <p>{{ createdAt }}</p>
       </div>
       <div class="lower">
@@ -22,6 +22,9 @@
 import { defineComponent, PropType } from 'vue';
 import Tag from './MetaDataTag.vue';
 import { TicketStatus, ITicketMetaData } from '../../@types/ticket';
+import { useEditor, EditorContent } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit';
+import Heading from '@tiptap/extension-heading';
 
 interface ITicketStyle {
   backgroundColor: string;
@@ -31,7 +34,7 @@ interface ITicketStyle {
 
 export default defineComponent({
   name: 'MetaDataTicket',
-  components: { Tag },
+  components: { Tag, EditorContent },
   props: {
     metadata: { type: Object as PropType<ITicketMetaData>, required: true },
   },
@@ -47,18 +50,38 @@ export default defineComponent({
     const createdAt: Date = new Date(props.metadata.createdAt);
     const readableDate: string = createdAt.toLocaleDateString();
 
+    const subjectEditor = useEditor({
+      content: props.metadata.subject,
+      extensions: [
+        StarterKit,
+        Heading.configure({
+          HTMLAttributes: {
+            class: 'subject-header',
+          },
+        }),
+      ],
+      editable: false,
+    });
+
     return {
       backgroundColor: ticketStyle.backgroundColor,
       sideColor: ticketStyle.sideColor,
       createdAt: readableDate,
       updated: ticketStyle.updated,
+      subjectEditor,
     };
   },
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @use '../../scss/colors' as c;
+
+.subject-header {
+  padding: inital;
+  margin: 0;
+  font-weight: 500;
+}
 
 .ticket-metadata {
   border-radius: 8px;
@@ -88,6 +111,7 @@ export default defineComponent({
   p {
     color: c.$text;
     margin: 0;
+    padding: 0;
   }
 
   p {

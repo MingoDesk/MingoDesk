@@ -10,7 +10,7 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import { defineComponent } from 'vue';
-import { createTicket } from 'helpers/api/tickets/ticketController';
+import { createTicket } from '../../helpers/api/tickets/ticketController';
 import Cta from '../buttons/Cta.vue';
 
 export default defineComponent({
@@ -33,7 +33,7 @@ export default defineComponent({
   },
   methods: {
     async handleSubmit() {
-      createTicket(this.editor.getJSON(), this.subjectEditor.getSON())
+      createTicket(this.editor.getJSON(), this.subjectEditor.getJSON());
     },
   },
 });

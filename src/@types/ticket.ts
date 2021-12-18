@@ -1,3 +1,5 @@
+import { JSONContent } from '@tiptap/core';
+
 export enum TicketStatus {
   open = 1,
   updated,
@@ -8,7 +10,8 @@ export enum TicketStatus {
 export interface IMessage {
   authorId: string;
   author: string;
-  text: string;
+  subject: JSONContent;
+  body: JSONContent;
   createdAt: Date;
   id: string;
 }
@@ -39,6 +42,7 @@ export interface ITicketMetaData {
   tags: ILabel[];
   labels: ILabel[];
   previewText: string;
+  subject: JSONContent;
 }
 
 export interface ITicket extends ITicketMetaData {

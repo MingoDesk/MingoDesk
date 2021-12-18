@@ -35,7 +35,6 @@ import { baseUrl } from '../config/config.json';
 import { get, IReturn } from '../helpers/api/requestGenerator';
 import { user } from '../helpers/store/userStore';
 import Cta from '../components/buttons/Cta.vue';
-import { createTicket } from '../helpers/api/tickets/ticketController';
 import Header from '../components/Header.vue';
 
 const tries: Ref<number> = ref(0);
