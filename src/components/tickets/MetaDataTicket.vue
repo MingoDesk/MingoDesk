@@ -84,7 +84,7 @@ export default defineComponent({
 }
 
 .ticket-metadata {
-  border-radius: 8px;
+  border-radius: 4px;
   background: v-bind(backgroundColor);
   cursor: pointer;
   transition: 0.3s ease;
@@ -128,7 +128,7 @@ export default defineComponent({
 
   .lower {
     padding: 0.1rem 0.5rem 0.5rem 0.5rem;
-    height: 2rem;
+    height: 1rem;
   }
 
   .upper {
@@ -149,7 +149,7 @@ export default defineComponent({
   display: inline-block;
   width: 1rem;
   background-color: v-bind(sideColor);
-  border-radius: 8px 0 0 8px;
+  border-radius: 4px 0 0 4px;
   transition: 0.3s ease;
   display: v-bind(updated);
 }

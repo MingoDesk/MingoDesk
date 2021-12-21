@@ -1,10 +1,25 @@
 <template>
   <Header :subheading="subheading" routeName="Your tickets" />
-  <ul v-if="metadata && metadata.data && metadata.data.length">
-    <li v-for="data in metadata.data" :key="data._id">
-      <MetaDataTicket :metadata="data" />
-    </li>
-  </ul>
+  <section class="metadta-tickets-container">
+    <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
+      <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
+        <MetaDataTicket :metadata="data" />
+      </li>
+    </ul>
+    <div class="no-selected-ticket-container">
+      <div class="inner-container">
+        <div class="card-container">
+          <div class="card">
+            <h1>Select a ticket to read</h1>
+            <p>Select a ticket to read and reply!</p>
+          </div>
+          <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
+          <div class="square" aria-hidden="true"></div>
+          <div class="square" id="blue" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </section>
   <section v-if="creatingTicket">
     <CreateTicketModal />
   </section>
@@ -30,7 +45,7 @@
 import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
 import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
 import CreateTicketModal from '../components/tickets/CreateTicketModal.vue';
-import { ITicketMetaData } from '../@types/ticket';
+import { ITicket, ITicketMetaData } from '../@types/ticket';
 import { baseUrl } from '../config/config.json';
 import { get, IReturn } from '../helpers/api/requestGenerator';
 import { user } from '../helpers/store/userStore';
@@ -41,6 +56,7 @@ const tries: Ref<number> = ref(0);
 const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
 const subheading: Ref<string> = ref(`Currently you have 0 tickets`);
 const creatingTicket: Ref<boolean> = ref(false);
+const selectedTicket: Ref<ITicket | null> = ref(null);
 
 const getPersonalTickets = async (): Promise<IReturn> => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -96,6 +112,9 @@ export default defineComponent({
       //window.location.reload();
       creatingTicket.value = true;
     },
+    handleSelectTicket(ticketId: string) {
+      selectedTicket.value = authoredTickets.value.data.find((el: ITicketMetaData) => el._id === ticketId);
+    },
   },
 });
 </script>
@@ -147,7 +166,7 @@ ul {
 }
 
 li {
-  padding-top: 0.5rem;
+  margin-top: 0.5rem;
   list-style: none;
 }
 
@@ -230,5 +249,35 @@ li {
       color: c.$text-link;
     }
   }
+}
+
+.metadta-tickets-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.no-selected-ticket-container {
+  margin-right: 5%;
+  .inner-container {
+    height: inherit;
+    width: 100%;
+    position: initial;
+  }
+
+  .card {
+    min-width: 20rem;
+    max-height: 10rem;
+    margin-right: 10%;
+
+    h1 {
+      margin-top: 15%;
+    }
+  }
+}
+
+.metadata-tickets {
+  max-width: 40rem;
+  min-width: 30rem;
 }
 </style>

@@ -43,6 +43,7 @@ export interface ITicketMetaData {
   labels: ILabel[];
   previewText: string;
   subject: JSONContent;
+  _id: string;
 }
 
 export interface ITicket extends ITicketMetaData {
