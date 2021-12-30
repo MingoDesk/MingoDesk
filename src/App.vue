@@ -36,7 +36,6 @@ export default defineComponent({
 
     if (user.value && user.value.response) {
       userPermissions.value = user.value.response.user.permissions;
-      console.log(userPermissions.value);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       nav.value = getNav(userPermissions.value);
@@ -46,7 +45,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @use './scss/colors' as c;
 @use './scss/text';
 
@@ -117,5 +116,13 @@ body::after {
 .nav {
   grid-area: nav;
   margin-top: 5%;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: c.$alt-text;
+  pointer-events: none;
+  height: 0;
+  float: left;
 }
 </style>

@@ -1,12 +1,17 @@
 <template>
   <Header :subheading="subheading" routeName="Your tickets" />
-  <section class="metadta-tickets-container">
-    <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
-      <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
-        <MetaDataTicket :metadata="data" />
-      </li>
-    </ul>
-    <div class="no-selected-ticket-container">
+  <div class="your-tickets">
+    <PerfectScrollbar :options="scrollbarOptions" data-simplebar-auto-hide="false" class="metadata-tickets-container">
+      <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
+        <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
+          <MetaDataTicket :metadata="data" :isDraft="data.isDraft" />
+        </li>
+      </ul>
+    </PerfectScrollbar>
+    <div
+      v-if="!creatingTicket && metadata && metadata.data && metadata.data.length"
+      class="no-selected-ticket-container"
+    >
       <div class="inner-container">
         <div class="card-container">
           <div class="card">
@@ -19,26 +24,26 @@
         </div>
       </div>
     </div>
-  </section>
-  <section v-if="creatingTicket">
-    <CreateTicketModal />
-  </section>
-  <section v-else-if="!metadata || !metadata.data || creatingTicket" class="no-tickets-container">
-    <div class="inner-container">
-      <div class="card-container">
-        <div class="card">
-          <h1>You haven't created any<br />tickets yet</h1>
-          <p>
-            Hi Samantha, welcome to MingoDesk! To create a ticket, click the big blue button below or visit the
-            <a href="#">FAQ?</a> if you need any assistance
-          </p>
+    <section v-if="creatingTicket" class="create-ticket-modal">
+      <CreateTicketModal />
+    </section>
+    <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">
+      <div class="inner-container">
+        <div class="card-container">
+          <div class="card">
+            <h1>You haven't created any<br />tickets yet</h1>
+            <p>
+              Hi Samantha, welcome to MingoDesk! To create a ticket, click the big blue button below or visit the
+              <a href="#">FAQ?</a> if you need any assistance
+            </p>
+          </div>
+          <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
+          <div class="square" aria-hidden="true"></div>
+          <div class="square" id="blue" aria-hidden="true"></div>
         </div>
-        <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
-        <div class="square" aria-hidden="true"></div>
-        <div class="square" id="blue" aria-hidden="true"></div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </template>
 
 <script lang="ts">
@@ -59,7 +64,6 @@ const creatingTicket: Ref<boolean> = ref(false);
 const selectedTicket: Ref<ITicket | null> = ref(null);
 
 const getPersonalTickets = async (): Promise<IReturn> => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const data = await get(`${baseUrl}/tickets/authored/feed/${user.value!.response.user.providerId}`, {
     withCredentials: true,
   });
@@ -98,18 +102,52 @@ export default defineComponent({
       }
     });
 
-    getDataAtInterval(50);
+    const scrollbarOptions = {
+      maxScrollbarLength: 40,
+    };
+
     return {
       metadata: authoredTickets,
       subheading,
       creatingTicket,
+      scrollbarOptions,
     };
   },
   methods: {
     async handleCreateTicket() {
-      //const newTicket = await createTicket('This ticket was created from the front-end', 'Front-end ticket');
-      //console.log(newTicket);
-      //window.location.reload();
+      const now = new Date();
+      const drafTicket = {
+        _id: 'DRAFT',
+        isDraft: true,
+        authorId: user.value!.response.user.providerId,
+        author: user.value!.response.user.name,
+        subject: {
+          type: 'doc',
+          content: [
+            {
+              type: 'heading',
+              attrs: {
+                level: 3,
+              },
+              content: [
+                {
+                  type: 'text',
+                  text: 'DRAFT: Your title here...',
+                },
+              ],
+            },
+          ],
+        },
+        authorOrganisationId: null,
+        status: 2,
+        createdAt: now,
+        isStarred: false,
+        tags: [],
+        labels: [],
+        isUpdated: false,
+        previewText: 'Some of your content will be here...',
+      };
+      authoredTickets.value.data.splice(0, 0, drafTicket);
       creatingTicket.value = true;
     },
     handleSelectTicket(ticketId: string) {
@@ -144,36 +182,18 @@ header {
   }
 }
 
-body {
-  background: c.$bg;
-  margin: 0;
-  padding: 0;
-}
-
 h1 {
   color: c.$text;
   margin-bottom: 0em;
 }
 
-p {
-  color: c.$alt-text;
-  margin: 0.5em 0 4.8em 0em;
+.buttons {
+  display: flex;
 }
 
-ul {
-  margin: 0;
-  padding: 0;
-}
-
-li {
-  margin-top: 0.5rem;
-  list-style: none;
-}
-
-#app {
-  font-family: Sofia Pro, Roboto, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.create-ticket-modal {
+  min-width: 55rem;
+  margin-top: 1%;
 }
 
 .no-tickets-container {
@@ -251,28 +271,46 @@ li {
   }
 }
 
-.metadta-tickets-container {
+.your-tickets {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+}
+
+.ps {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 84vh;
+  width: 32rem;
+
+  .metadata-tickets li:not(:first-child) {
+    margin-top: 0.5%;
+  }
 }
 
 .no-selected-ticket-container {
-  margin-right: 5%;
+  margin-right: 8%;
+}
+
+.no-selected-ticket-container {
   .inner-container {
-    height: inherit;
-    width: 100%;
+    height: 80vh;
     position: initial;
+    display: flex;
+    align-items: center;
   }
 
   .card {
     min-width: 20rem;
-    max-height: 10rem;
-    margin-right: 10%;
+    max-height: 14rem;
+    margin-right: 25%;
 
     h1 {
       margin-top: 15%;
     }
+  }
+
+  .cta {
+    width: 28rem;
   }
 }
 

@@ -24,6 +24,12 @@ import Tag from './MetaDataTag.vue';
 import { TicketStatus, ITicketMetaData } from '../../@types/ticket';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
+import Highlight from '@tiptap/extension-highlight';
+import Document from '@tiptap/extension-document';
+import Paragraph from '@tiptap/extension-paragraph';
+import Text from '@tiptap/extension-text';
+import Bold from '@tiptap/extension-bold';
+import Typography from '@tiptap/extension-typography';
 import Heading from '@tiptap/extension-heading';
 
 interface ITicketStyle {
@@ -37,6 +43,7 @@ export default defineComponent({
   components: { Tag, EditorContent },
   props: {
     metadata: { type: Object as PropType<ITicketMetaData>, required: true },
+    isDraft: { type: Boolean, default: false },
   },
   setup(props): Record<string, unknown> {
     const ticketStyle: ITicketStyle = {
@@ -47,6 +54,11 @@ export default defineComponent({
     if (props.metadata.status === TicketStatus.updated) {
       ticketStyle.updated = 'true';
     }
+
+    if (props.isDraft) {
+      ticketStyle.sideColor = '#50AA83';
+    }
+
     const createdAt: Date = new Date(props.metadata.createdAt);
     const readableDate: string = createdAt.toLocaleDateString();
 
@@ -54,6 +66,13 @@ export default defineComponent({
       content: props.metadata.subject,
       extensions: [
         StarterKit,
+        Highlight,
+        Typography,
+        Document,
+        Paragraph,
+        Text,
+        Heading,
+        Bold,
         Heading.configure({
           HTMLAttributes: {
             class: 'subject-header',
@@ -147,7 +166,7 @@ export default defineComponent({
 .ticket-metadata::before {
   content: '';
   display: inline-block;
-  width: 1rem;
+  width: 0.6rem;
   background-color: v-bind(sideColor);
   border-radius: 4px 0 0 4px;
   transition: 0.3s ease;

@@ -25,7 +25,6 @@ export default defineComponent({
       if (check(userPermissions.value, Staff.permissions)) return Unassigned;
       return YourTickets;
     });
-    console.log(route.value);
     return { route };
   },
 });
