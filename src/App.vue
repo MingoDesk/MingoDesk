@@ -125,4 +125,9 @@ body::after {
   height: 0;
   float: left;
 }
+
+p {
+  margin: 0;
+  color: c.$alt-text;
+}
 </style>

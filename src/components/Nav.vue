@@ -42,60 +42,61 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use '../scss/colors' as c;
-
-#logo {
-  width: 10rem;
-  padding: 2rem;
-  padding-bottom: 5rem;
-}
-
-#label2,
-#label3 {
-  margin-top: 2rem;
-}
-
-.label {
-  display: flex;
-  padding-left: 2rem;
-  align-items: center;
-
-  p {
-    margin: 0;
-    color: c.$text;
-    padding-left: 3%;
-    font-weight: bold;
-    font-size: 1.2em;
+.nav {
+  #logo {
+    width: 10rem;
+    padding: 2rem;
+    padding-bottom: 5rem;
   }
-}
 
-li {
-  &:nth-child(1) {
-    margin-top: 4%;
+  #label2,
+  #label3 {
+    margin-top: 2rem;
   }
-  transition: 0.3s ease;
-  padding: 0.8rem 0;
-  margin-top: 0.3rem;
-  width: 80%;
 
-  a {
-    font-weight: semi-bold;
-    color: c.$alt-text;
-    text-decoration: none;
+  .label {
+    display: flex;
     padding-left: 2rem;
+    align-items: center;
 
-    &.router-link-exact-active {
+    p {
+      margin: 0;
       color: c.$text;
+      padding-left: 3%;
+      font-weight: bold;
+      font-size: 1.2em;
     }
   }
-}
 
-.active,
-li:hover {
-  background-color: c.$active;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-  a {
-    color: c.$text;
+  li {
+    &:nth-child(1) {
+      margin-top: 4%;
+    }
+    transition: 0.3s ease;
+    padding: 0.8rem 0;
+    margin-top: 0.3rem;
+    width: 80%;
+
+    a {
+      font-weight: semi-bold;
+      color: c.$alt-text;
+      text-decoration: none;
+      padding-left: 2rem;
+
+      &.router-link-exact-active {
+        color: c.$text;
+      }
+    }
+  }
+
+  .active,
+  li:hover {
+    background-color: c.$active;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    a {
+      color: c.$text;
+    }
   }
 }
 </style>

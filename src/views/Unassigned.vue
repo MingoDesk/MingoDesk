@@ -111,11 +111,6 @@ h1 {
   margin-bottom: 0em;
 }
 
-p {
-  color: c.$alt-text;
-  margin: 0.5em 0 4.8em 0em;
-}
-
 ul {
   margin: 0;
   padding: 0;

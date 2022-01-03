@@ -1,4 +1,16 @@
 <template>
+  <div class="are-you-sure-container" v-if="attemptClose">
+    <div class="are-you-sure-inner-container">
+      <AreYouSureWidget
+        ctaActionMsg="Discard"
+        ctaReturnMsg="Cancel"
+        descriptionMsg="If you discard the ticket you'll loose all that you've typed."
+        actionMsg="Are you sure you want to discard the ticket?"
+        @return="handleCancelClick"
+        @action="handleDiscardClick"
+      />
+    </div>
+  </div>
   <Header :subheading="subheading" routeName="Your tickets" />
   <div class="your-tickets">
     <PerfectScrollbar :options="scrollbarOptions" data-simplebar-auto-hide="false" class="metadata-tickets-container">
@@ -12,20 +24,16 @@
       v-if="!creatingTicket && metadata && metadata.data && metadata.data.length"
       class="no-selected-ticket-container"
     >
-      <div class="inner-container">
-        <div class="card-container">
-          <div class="card">
-            <h1>Select a ticket to read</h1>
-            <p>Select a ticket to read and reply!</p>
-          </div>
-          <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
-          <div class="square" aria-hidden="true"></div>
-          <div class="square" id="blue" aria-hidden="true"></div>
+      <div class="card-container">
+        <div class="card">
+          <h1>Select a ticket to read</h1>
+          <p>Select a ticket to read and reply!</p>
         </div>
+        <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
       </div>
     </div>
     <section v-if="creatingTicket" class="create-ticket-modal">
-      <CreateTicketModal />
+      <CreateTicketModal @attemptClose="handleAttemptClose" />
     </section>
     <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">
       <div class="inner-container">
@@ -51,24 +59,19 @@ import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
 import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
 import CreateTicketModal from '../components/tickets/CreateTicketModal.vue';
 import { ITicket, ITicketMetaData } from '../@types/ticket';
-import { baseUrl } from '../config/config.json';
-import { get, IReturn } from '../helpers/api/requestGenerator';
+import { IReturn } from '../helpers/api/requestGenerator';
 import { user } from '../helpers/store/userStore';
 import Cta from '../components/buttons/Cta.vue';
 import Header from '../components/Header.vue';
+import AreYouSureWidget from '../components/modals/AreYouSureWidget.vue';
+import { getPersonalTickets } from '../helpers/api/tickets/ticketController';
 
 const tries: Ref<number> = ref(0);
 const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
 const subheading: Ref<string> = ref(`Currently you have 0 tickets`);
 const creatingTicket: Ref<boolean> = ref(false);
 const selectedTicket: Ref<ITicket | null> = ref(null);
-
-const getPersonalTickets = async (): Promise<IReturn> => {
-  const data = await get(`${baseUrl}/tickets/authored/feed/${user.value!.response.user.providerId}`, {
-    withCredentials: true,
-  });
-  return { ...data };
-};
+const attemptClose: Ref<boolean> = ref(false);
 
 const getData = async () => {
   if (tries.value > 3) return;
@@ -78,10 +81,6 @@ const getData = async () => {
   authoredTickets.value = { ...response };
 };
 
-const getDataAtInterval = (seconds: number) => {
-  setInterval(getData, seconds * 1000);
-};
-
 export default defineComponent({
   name: 'Your-tickets',
   components: {
@@ -89,6 +88,7 @@ export default defineComponent({
     Cta,
     Header,
     CreateTicketModal,
+    AreYouSureWidget,
   },
   props: {
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
@@ -104,6 +104,8 @@ export default defineComponent({
 
     const scrollbarOptions = {
       maxScrollbarLength: 40,
+      wheelSpeed: 0.2,
+      swipeEasing: true,
     };
 
     return {
@@ -111,6 +113,7 @@ export default defineComponent({
       subheading,
       creatingTicket,
       scrollbarOptions,
+      attemptClose,
     };
   },
   methods: {
@@ -153,12 +156,39 @@ export default defineComponent({
     handleSelectTicket(ticketId: string) {
       selectedTicket.value = authoredTickets.value.data.find((el: ITicketMetaData) => el._id === ticketId);
     },
+    handleAttemptClose() {
+      attemptClose.value = true;
+    },
+    handleDiscardClick() {
+      authoredTickets.value.data.shift();
+      creatingTicket.value = false;
+      attemptClose.value = false;
+    },
+    handleCancelClick() {
+      attemptClose.value = false;
+    },
   },
 });
 </script>
 
 <style lang="scss">
 @use '../scss/colors' as c;
+
+.are-you-sure-container {
+  position: fixed;
+  top: 0%;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100vh;
+  overflow-x: hidden;
+  background: rgba(0, 0, 0, 0.835);
+  overflow: hidden;
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 header {
   display: flex;
@@ -193,7 +223,7 @@ h1 {
 
 .create-ticket-modal {
   min-width: 55rem;
-  margin-top: 1%;
+  margin-top: 0.5%;
 }
 
 .no-tickets-container {
@@ -239,41 +269,31 @@ h1 {
   }
 }
 
-.inner-container {
-  height: inherit;
-  width: inherit;
-  position: fixed;
+.card {
+  background-color: c.$bg-purple;
+  padding: 0.2rem 4rem;
+  border-radius: 8px;
+  text-align: center;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 100vh;
 
-  .card {
-    background-color: c.$bg-purple;
-    padding: 0.2rem 4rem;
-    border-radius: 8px;
-    text-align: center;
+  h1 {
+    margin-top: 20%;
+  }
 
-    h1 {
-      margin-top: 20%;
-    }
+  p {
+    margin-top: 5%;
+  }
 
-    p {
-      margin-top: 5%;
-    }
-
-    a {
-      color: c.$text-link;
-    }
+  a {
+    color: c.$text-link;
   }
 }
 
 .your-tickets {
   display: flex;
   justify-content: space-between;
+  width: 99.5%;
+  height: 90%;
 }
 
 .ps {
@@ -281,6 +301,7 @@ h1 {
   overflow-x: hidden;
   height: 84vh;
   width: 32rem;
+  z-index: 100;
 
   .metadata-tickets li:not(:first-child) {
     margin-top: 0.5%;
@@ -292,20 +313,16 @@ h1 {
 }
 
 .no-selected-ticket-container {
-  .inner-container {
-    height: 80vh;
-    position: initial;
-    display: flex;
-    align-items: center;
-  }
-
   .card {
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    flex-direction: column;
     min-width: 20rem;
-    max-height: 14rem;
-    margin-right: 25%;
+    height: 14rem;
 
     h1 {
-      margin-top: 15%;
+      margin: 0;
     }
   }
 

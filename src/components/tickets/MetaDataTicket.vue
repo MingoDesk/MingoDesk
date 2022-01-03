@@ -24,12 +24,6 @@ import Tag from './MetaDataTag.vue';
 import { TicketStatus, ITicketMetaData } from '../../@types/ticket';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
-import Highlight from '@tiptap/extension-highlight';
-import Document from '@tiptap/extension-document';
-import Paragraph from '@tiptap/extension-paragraph';
-import Text from '@tiptap/extension-text';
-import Bold from '@tiptap/extension-bold';
-import Typography from '@tiptap/extension-typography';
 import Heading from '@tiptap/extension-heading';
 
 interface ITicketStyle {
@@ -66,13 +60,6 @@ export default defineComponent({
       content: props.metadata.subject,
       extensions: [
         StarterKit,
-        Highlight,
-        Typography,
-        Document,
-        Paragraph,
-        Text,
-        Heading,
-        Bold,
         Heading.configure({
           HTMLAttributes: {
             class: 'subject-header',
@@ -97,7 +84,6 @@ export default defineComponent({
 @use '../../scss/colors' as c;
 
 .subject-header {
-  padding: inital;
   margin: 0;
   font-weight: 500;
 }
@@ -158,7 +144,7 @@ export default defineComponent({
     display: flex;
 
     li {
-      padding-left: 0.5em;
+      margin-left: 0.5em;
     }
   }
 }

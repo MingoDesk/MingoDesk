@@ -7,8 +7,8 @@
     <div class="buttons">
       <Cta color="#AF4949" sprite="close" @click="handleAttemptClose" />
       <Cta color="#2F315A" sprite="expand" @click="handleExpand" />
-      <Cta msg="Attach files" color="#2F315A" @click="handleAttachment" />
-      <Cta msg="Send" color="#3B9757" sprite="arrow" @click="handleSubmit" />
+      <Cta msg="Attach files" sprite="attachment" color="#2F315A" @click="handleAttachment" />
+      <Cta msg="send" color="#3B9757" sprite="arrow" @click="handleSubmit" />
     </div>
   </div>
 </template>
@@ -18,11 +18,7 @@ import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import Document from '@tiptap/extension-document';
-import Paragraph from '@tiptap/extension-paragraph';
-import Text from '@tiptap/extension-text';
-import Bold from '@tiptap/extension-bold';
 import Typography from '@tiptap/extension-typography';
-import Heading from '@tiptap/extension-heading';
 import Placeholder from '@tiptap/extension-placeholder';
 import { defineComponent } from 'vue';
 import { createTicket } from '../../helpers/api/tickets/ticketController';
@@ -37,13 +33,6 @@ export default defineComponent({
     const subjectEditor = useEditor({
       extensions: [
         StarterKit,
-        Highlight,
-        Typography,
-        Document,
-        Paragraph,
-        Text,
-        Bold,
-        Heading,
         Placeholder.configure({
           placeholder: 'Your title here...',
         }),
@@ -56,10 +45,6 @@ export default defineComponent({
         Highlight,
         Typography,
         Document,
-        Paragraph,
-        Text,
-        Bold,
-        Heading,
         Placeholder.configure({
           placeholder: 'Your markdown content...',
         }),
@@ -100,6 +85,10 @@ export default defineComponent({
 .title-edior .ProseMirror p {
   font-size: 1.1em;
   font-weight: 500;
+}
+
+.title-edior {
+  margin-top: 2%;
 }
 
 .editor {
