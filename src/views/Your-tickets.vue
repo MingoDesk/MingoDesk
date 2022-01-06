@@ -222,8 +222,11 @@ h1 {
 }
 
 .create-ticket-modal {
-  min-width: 55rem;
+  width: inherit;
+  min-width: 30rem;
   margin-top: 0.5%;
+  max-height: 50vh;
+  padding-left: 5%;
 }
 
 .no-tickets-container {
@@ -292,7 +295,7 @@ h1 {
 .your-tickets {
   display: flex;
   justify-content: space-between;
-  width: 99.5%;
+  width: 100%;
   height: 90%;
 }
 
@@ -306,10 +309,6 @@ h1 {
   .metadata-tickets li:not(:first-child) {
     margin-top: 0.5%;
   }
-}
-
-.no-selected-ticket-container {
-  margin-right: 8%;
 }
 
 .no-selected-ticket-container {
@@ -334,5 +333,9 @@ h1 {
 .metadata-tickets {
   max-width: 40rem;
   min-width: 30rem;
+}
+
+.metadata-tickets-container {
+  padding-right: 10%;
 }
 </style>

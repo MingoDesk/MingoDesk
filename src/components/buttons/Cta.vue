@@ -83,7 +83,7 @@ export default defineComponent({
   },
   setup(props) {
     let message = props.msg || '';
-    const minWidth = props.msg ? '14rem' : '3.5rem';
+    const minWidth = props.msg ? '14rem' : '3rem';
 
     if (message) {
       message = props.msg.charAt(0).toUpperCase() + props.msg.slice(1);

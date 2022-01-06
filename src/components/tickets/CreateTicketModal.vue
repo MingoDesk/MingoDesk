@@ -1,12 +1,16 @@
 <template>
-  <div class="editor-content">
-    <div class="editor">
-      <editor-content class="title-edior" :editor="subjectEditor" />
-      <editor-content class="body-editor" :editor="editor" />
+  <div class="editor">
+    <div class="editor-top">
+      <div class="editor-top-inputs">
+        <editor-content class="title-edior editor-input" :editor="subjectEditor" />
+        <editor-content class="body-editor editor-input" :editor="editor" />
+      </div>
+      <div class="editor-top-buttons">
+        <Cta color="#2F315A" sprite="expand" @click="handleExpand" />
+        <Cta color="#AF4949" sprite="close" @click="handleAttemptClose" />
+      </div>
     </div>
     <div class="buttons">
-      <Cta color="#AF4949" sprite="close" @click="handleAttemptClose" />
-      <Cta color="#2F315A" sprite="expand" @click="handleExpand" />
       <Cta msg="Attach files" sprite="attachment" color="#2F315A" @click="handleAttachment" />
       <Cta msg="send" color="#3B9757" sprite="arrow" @click="handleSubmit" />
     </div>
@@ -96,13 +100,28 @@ export default defineComponent({
   padding: 1rem 2rem 2rem 2rem;
   min-height: 15rem;
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 50vh;
+  height: 30vh;
 
-  .ProseMirror h1,
-  h2,
-  h3,
-  p {
+  .editor-input h1 h2 h3 p {
     margin-bottom: 1rem;
   }
+}
+
+.editor-top,
+.editor-top-buttons {
+  display: flex;
+}
+
+.editor-top {
+  justify-content: space-between;
+}
+
+.editor-top-buttons .cta:nth-child(1) {
+  margin-right: 1rem;
 }
 
 .body-editor .ProseMirror p,
@@ -112,11 +131,15 @@ h3 {
   color: c.$alt-text;
 }
 
+.body-editor {
+  margin-top: 5%;
+}
+
 .buttons {
   margin-top: 3%;
 
   .cta:not(:first-child) {
-    margin-left: 2%;
+    margin-left: 1rem;
   }
 }
 </style>
