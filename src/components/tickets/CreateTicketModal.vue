@@ -59,7 +59,10 @@ export default defineComponent({
   },
   methods: {
     async handleSubmit() {
-      createTicket(this.editor.getJSON(), this.subjectEditor.getJSON());
+      const newTicket = await createTicket(this.editor.getJSON(), this.subjectEditor.getJSON());
+      if (!newTicket) throw new Error('Something whent horribly wrong creating the ticket, please try again');
+      if (newTicket.errors && newTicket.errors.status !== 200) throw new Error(newTicket.errors);
+      if (newTicket.response) this.$emit('successfulSubmit');
     },
     async handleAttemptClose() {
       this.$emit('attemptClose');
@@ -86,13 +89,19 @@ export default defineComponent({
   }
 }
 
+.ProseMirror {
+  max-width: 35rem;
+  word-wrap: break-word;
+  white-space: break-spaces;
+}
+
 .title-edior .ProseMirror p {
   font-size: 1.1em;
   font-weight: 500;
 }
 
 .title-edior {
-  margin-top: 2%;
+  margin-top: 1rem;
 }
 
 .editor {
@@ -132,11 +141,11 @@ h3 {
 }
 
 .body-editor {
-  margin-top: 5%;
+  margin-top: 1rem;
 }
 
 .buttons {
-  margin-top: 3%;
+  margin-top: 1rem;
 
   .cta:not(:first-child) {
     margin-left: 1rem;

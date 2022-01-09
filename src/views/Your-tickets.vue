@@ -1,57 +1,59 @@
 <template>
-  <div class="are-you-sure-container" v-if="attemptClose">
-    <div class="are-you-sure-inner-container">
-      <AreYouSureWidget
-        ctaActionMsg="Discard"
-        ctaReturnMsg="Cancel"
-        descriptionMsg="If you discard the ticket you'll loose all that you've typed."
-        actionMsg="Are you sure you want to discard the ticket?"
-        @return="handleCancelClick"
-        @action="handleDiscardClick"
-      />
-    </div>
-  </div>
-  <Header :subheading="subheading" routeName="Your tickets" />
-  <div class="your-tickets">
-    <PerfectScrollbar :options="scrollbarOptions" data-simplebar-auto-hide="false" class="metadata-tickets-container">
-      <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
-        <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
-          <MetaDataTicket :metadata="data" :isDraft="data.isDraft" />
-        </li>
-      </ul>
-    </PerfectScrollbar>
-    <div
-      v-if="!creatingTicket && metadata && metadata.data && metadata.data.length"
-      class="no-selected-ticket-container"
-    >
-      <div class="card-container">
-        <div class="card">
-          <h1>Select a ticket to read</h1>
-          <p>Select a ticket to read and reply!</p>
-        </div>
-        <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
+  <main class="your-tickets-container">
+    <div class="are-you-sure-container" v-if="attemptClose">
+      <div class="are-you-sure-inner-container">
+        <AreYouSureWidget
+          ctaActionMsg="Discard"
+          ctaReturnMsg="Cancel"
+          descriptionMsg="If you discard the ticket you'll loose all that you've typed."
+          actionMsg="Are you sure you want to discard the ticket?"
+          @return="handleCancelClick"
+          @action="handleDiscardClick"
+        />
       </div>
     </div>
-    <section v-if="creatingTicket" class="create-ticket-modal">
-      <CreateTicketModal @attemptClose="handleAttemptClose" />
-    </section>
-    <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">
-      <div class="inner-container">
+    <Header :subheading="subheading" routeName="Your tickets" />
+    <div class="your-tickets">
+      <PerfectScrollbar :options="scrollbarOptions" data-simplebar-auto-hide="false" class="metadata-tickets-container">
+        <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
+          <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
+            <MetaDataTicket :metadata="data" :isDraft="data.isDraft" />
+          </li>
+        </ul>
+      </PerfectScrollbar>
+      <div
+        v-if="!creatingTicket && metadata && metadata.data && metadata.data.length"
+        class="no-selected-ticket-container"
+      >
         <div class="card-container">
           <div class="card">
-            <h1>You haven't created any<br />tickets yet</h1>
-            <p>
-              Hi Samantha, welcome to MingoDesk! To create a ticket, click the big blue button below or visit the
-              <a href="#">FAQ?</a> if you need any assistance
-            </p>
+            <h1>Select a ticket to read</h1>
+            <p>Select a ticket to read and reply!</p>
           </div>
-          <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
-          <div class="square" aria-hidden="true"></div>
-          <div class="square" id="blue" aria-hidden="true"></div>
+          <Cta msg="Create a ticket" color="#4346d4" @click="handleStartCreateTicket" />
         </div>
       </div>
-    </section>
-  </div>
+      <section v-if="creatingTicket" class="create-ticket-modal">
+        <CreateTicketModal @attemptClose="handleAttemptClose" @successfulSubmit="handleSuccessfulSubmit" />
+      </section>
+      <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">
+        <div class="inner-container">
+          <div class="card-container">
+            <div class="card">
+              <h1>You haven't created any<br />tickets yet</h1>
+              <p>
+                Hi Samantha, welcome to MingoDesk! To create a ticket, click the big blue button below or visit the
+                <a href="#">FAQ?</a> if you need any assistance
+              </p>
+            </div>
+            <Cta msg="Create a ticket" color="#4346d4" @click="handleCreateTicket" />
+            <div class="square" aria-hidden="true"></div>
+            <div class="square" id="blue" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 </template>
 
 <script lang="ts">
@@ -117,7 +119,7 @@ export default defineComponent({
     };
   },
   methods: {
-    async handleCreateTicket() {
+    async handleStartCreateTicket() {
       const now = new Date();
       const drafTicket = {
         _id: 'DRAFT',
@@ -167,12 +169,19 @@ export default defineComponent({
     handleCancelClick() {
       attemptClose.value = false;
     },
+    handleSuccessfulSubmit() {
+      window.location.reload();
+    },
   },
 });
 </script>
 
 <style lang="scss">
 @use '../scss/colors' as c;
+
+.your-tickets-container {
+  overflow-x: hidden;
+}
 
 .are-you-sure-container {
   position: fixed;
@@ -224,9 +233,9 @@ h1 {
 .create-ticket-modal {
   width: inherit;
   min-width: 30rem;
+  max-width: 60%;
   margin-top: 0.5%;
   max-height: 50vh;
-  padding-left: 5%;
 }
 
 .no-tickets-container {
@@ -297,6 +306,7 @@ h1 {
   justify-content: space-between;
   width: 100%;
   height: 90%;
+  padding-right: 10%;
 }
 
 .ps {
@@ -333,9 +343,5 @@ h1 {
 .metadata-tickets {
   max-width: 40rem;
   min-width: 30rem;
-}
-
-.metadata-tickets-container {
-  padding-right: 10%;
 }
 </style>
