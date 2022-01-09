@@ -23,7 +23,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@use '../scss/colors' as c;
+@use '../../scss/colors' as c;
 
 .tag {
   width: 1.6rem;

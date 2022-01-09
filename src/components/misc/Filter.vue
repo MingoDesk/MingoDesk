@@ -17,12 +17,12 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'filter',
+  name: 'FilterTickets',
 });
 </script>
 
 <style lang="scss" scoped>
-@use '../scss/colors' as c;
+@use '../../scss/colors' as c;
 
 .filter {
   padding: 0.3em 1em;

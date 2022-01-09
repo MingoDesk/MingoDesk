@@ -2,7 +2,7 @@
   <div class="ticket-metadata">
     <div class="container">
       <div class="upper">
-        <h3>{{ metadata.subject }}</h3>
+        <editor-content :editor="subjectEditor" class="subject-header" />
         <p>{{ createdAt }}</p>
       </div>
       <div class="lower">
@@ -21,7 +21,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import Tag from './MetaDataTag.vue';
-import { TicketStatus, ITicketMetaData } from '../helpers/types/ticket';
+import { TicketStatus, ITicketMetaData } from '../../@types/ticket';
+import { useEditor, EditorContent } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit';
+import Heading from '@tiptap/extension-heading';
 
 interface ITicketStyle {
   backgroundColor: string;
@@ -31,9 +34,10 @@ interface ITicketStyle {
 
 export default defineComponent({
   name: 'MetaDataTicket',
-  components: { Tag },
+  components: { Tag, EditorContent },
   props: {
     metadata: { type: Object as PropType<ITicketMetaData>, required: true },
+    isDraft: { type: Boolean, default: false },
   },
   setup(props): Record<string, unknown> {
     const ticketStyle: ITicketStyle = {
@@ -44,24 +48,48 @@ export default defineComponent({
     if (props.metadata.status === TicketStatus.updated) {
       ticketStyle.updated = 'true';
     }
+
+    if (props.isDraft) {
+      ticketStyle.sideColor = '#50AA83';
+    }
+
     const createdAt: Date = new Date(props.metadata.createdAt);
     const readableDate: string = createdAt.toLocaleDateString();
+
+    const subjectEditor = useEditor({
+      content: props.metadata.subject,
+      extensions: [
+        StarterKit,
+        Heading.configure({
+          HTMLAttributes: {
+            class: 'subject-header',
+          },
+        }),
+      ],
+      editable: false,
+    });
 
     return {
       backgroundColor: ticketStyle.backgroundColor,
       sideColor: ticketStyle.sideColor,
       createdAt: readableDate,
       updated: ticketStyle.updated,
+      subjectEditor,
     };
   },
 });
 </script>
 
-<style scoped lang="scss">
-@use '../scss/colors' as c;
+<style lang="scss">
+@use '../../scss/colors' as c;
+
+.subject-header {
+  margin: 0;
+  font-weight: 500;
+}
 
 .ticket-metadata {
-  border-radius: 8px;
+  border-radius: 4px;
   background: v-bind(backgroundColor);
   cursor: pointer;
   transition: 0.3s ease;
@@ -88,6 +116,7 @@ export default defineComponent({
   p {
     color: c.$text;
     margin: 0;
+    padding: 0;
   }
 
   p {
@@ -104,7 +133,7 @@ export default defineComponent({
 
   .lower {
     padding: 0.1rem 0.5rem 0.5rem 0.5rem;
-    height: 2rem;
+    height: 1rem;
   }
 
   .upper {
@@ -115,7 +144,7 @@ export default defineComponent({
     display: flex;
 
     li {
-      padding-left: 0.5em;
+      margin-left: 0.5em;
     }
   }
 }
@@ -123,9 +152,9 @@ export default defineComponent({
 .ticket-metadata::before {
   content: '';
   display: inline-block;
-  width: 1rem;
+  width: 0.6rem;
   background-color: v-bind(sideColor);
-  border-radius: 8px 0 0 8px;
+  border-radius: 4px 0 0 4px;
   transition: 0.3s ease;
   display: v-bind(updated);
 }

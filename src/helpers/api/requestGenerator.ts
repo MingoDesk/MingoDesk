@@ -2,6 +2,7 @@ import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 interface IReturn {
   fetching: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors?: any;
   response?: AxiosResponse['data'];
 }
@@ -25,7 +26,7 @@ const get = async (baseUrl: string, params: AxiosRequestConfig): Promise<IReturn
   return state;
 };
 
-const post = async (url: string, params: AxiosRequestConfig): Promise<IReturn> => {
+const post = async (url: string, data: AxiosRequestConfig['data']): Promise<IReturn> => {
   const state: IReturn = {
     response: {},
     errors: null,
@@ -33,7 +34,7 @@ const post = async (url: string, params: AxiosRequestConfig): Promise<IReturn> =
   };
 
   try {
-    const res = await axios.post(url, params.params, params.data);
+    const res = await axios.post(url, data, { withCredentials: true });
     state.response = res.data;
   } catch (error) {
     state.errors = error;

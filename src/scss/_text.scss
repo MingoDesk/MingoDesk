@@ -16,6 +16,14 @@
 
 @font-face {
   font-family: 'Sofia Pro';
+  font-style: semibold;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./assets/fonts/SOFIA-PRO-SEMI-BOLD-AZ.OTF') format('truetype');
+}
+
+@font-face {
+  font-family: 'Sofia Pro';
   font-style: bold;
   font-weight: 700;
   font-display: swap;
