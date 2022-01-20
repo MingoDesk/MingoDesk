@@ -84,7 +84,7 @@ const getData = async () => {
 };
 
 export default defineComponent({
-  name: 'Your-tickets',
+  name: 'YourTickets',
   components: {
     MetaDataTicket,
     Cta,

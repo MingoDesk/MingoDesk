@@ -19,7 +19,7 @@
     </div>
     <ul v-for="category in data" :key="category.label">
       <li v-for="item in category.items" :key="item" :class="isActive(item) ? 'active' : null">
-        <router-link :to="item">{{ item }}</router-link>
+        <router-link :to="`./${item}`">{{ item }}</router-link>
       </li>
     </ul>
   </aside>

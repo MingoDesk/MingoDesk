@@ -10,7 +10,7 @@ import { defineComponent, computed } from 'vue';
 import { check } from '../helpers/getNav';
 import { userPermissions } from '../helpers/store/userStore';
 import Unassigned from './Unassigned.vue';
-import YourTickets from './Your-tickets.vue';
+import YourTickets from './YourTickets.vue';
 
 export default defineComponent({
   name: 'App home',
