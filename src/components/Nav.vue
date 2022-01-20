@@ -2,7 +2,7 @@
   <aside class="nav">
     <img
       src="../assets/Mingo_Desk_Final_horizontal_White.png"
-      alt="blue text 'MD' with a flamingo in the middle"
+      alt="blue text 'MD' with a subtle flamingo in the middle"
       id="logo"
     />
     <div class="label">
