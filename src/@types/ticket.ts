@@ -2,9 +2,9 @@ import { JSONContent } from '@tiptap/core';
 
 export enum TicketStatus {
   open = 1,
-  updated,
-  snoozed,
-  closed,
+  updated = 2,
+  snoozed = 3,
+  closed = 4,
 }
 
 export interface IMessage {

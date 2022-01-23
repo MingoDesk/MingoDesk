@@ -2,14 +2,18 @@ import { get, patch, post, IReturn } from '../requestGenerator';
 import { baseUrl } from '../../../config/config.json';
 import { JSONContent } from '@tiptap/core';
 import { user } from '../../store/userStore';
+import { TicketStatus } from '../../../@types/ticket';
 
 export const getTicket = async (ticketId: string): Promise<IReturn> => {
   const data = await get(`${baseUrl}/tickets/`, { params: { ticketId }, withCredentials: true });
   return data;
 };
 
-export const getUnassignedTickets = async (): Promise<IReturn> => {
-  const data = await get(`${baseUrl}/tickets/unassigned/feed`, { withCredentials: true });
+export const getUnassignedTickets = async (status: TicketStatus): Promise<IReturn> => {
+  const data = await get(`${baseUrl}/tickets/unassigned/feed`, {
+    withCredentials: true,
+    params: { status },
+  });
   return { ...data };
 };
 
@@ -31,9 +35,10 @@ export const replyTicket = async (ticketId: string, message: string): Promise<IR
   return data;
 };
 
-export const getPersonalTickets = async (): Promise<IReturn> => {
+export const getPersonalTickets = async (status: TicketStatus): Promise<IReturn> => {
   const data = await get(`${baseUrl}/tickets/authored/feed/${user.value!.response.user.providerId}`, {
     withCredentials: true,
+    params: { status },
   });
   return { ...data };
 };

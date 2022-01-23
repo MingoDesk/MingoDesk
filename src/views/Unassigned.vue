@@ -25,23 +25,18 @@
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
 import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
-import { ITicketMetaData } from '../@types/ticket';
-import { baseUrl } from '../config/config.json';
-import { get, IReturn } from '../helpers/api/requestGenerator';
+import { ITicketMetaData, TicketStatus } from '../@types/ticket';
+import { IReturn } from '../helpers/api/requestGenerator';
 import Header from '../components/Header.vue';
+import { getUnassignedTickets } from '../helpers/api/tickets/ticketController';
 
 const subheading: Ref<string> = ref(`Currently you have 0 tickets`);
 const tries: Ref<number> = ref(0);
 const unassignedTickets: Ref<IReturn['response'] | null> = ref(null);
 
-const getUnassignedTickets = async (): Promise<IReturn> => {
-  const data = await get(`${baseUrl}/tickets/unassigned/feed`, { withCredentials: true });
-  return { ...data };
-};
-
 const getData = async () => {
   if (tries.value > 3) return;
-  const { response, errors } = await getUnassignedTickets();
+  const { response, errors } = await getUnassignedTickets(TicketStatus.open);
   if (errors && errors.response.status === 403) return tries.value++;
 
   unassignedTickets.value = { ...response };
@@ -184,10 +179,6 @@ li {
     padding: 0.2rem 4rem;
     border-radius: 8px;
     text-align: center;
-
-    h1 {
-      margin-top: 20%;
-    }
 
     p {
       margin-top: 5%;
