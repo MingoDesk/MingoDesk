@@ -1,19 +1,7 @@
 <template>
-  <main class="your-tickets-container">
-    <div class="are-you-sure-container" v-if="attemptClose">
-      <div class="are-you-sure-inner-container">
-        <AreYouSureWidget
-          ctaActionMsg="Discard"
-          ctaReturnMsg="Cancel"
-          descriptionMsg="If you discard the ticket you'll loose all that you've typed."
-          actionMsg="Are you sure you want to discard the ticket?"
-          @return="handleCancelClick"
-          @action="handleDiscardClick"
-        />
-      </div>
-    </div>
-    <Header :subheading="subheading" routeName="Your tickets" />
-    <div class="your-tickets">
+  <main class="Closed-tickets-container">
+    <Header :subheading="subheading" routeName="Closed tickets" />
+    <div class="Closed-tickets">
       <PerfectScrollbar :options="scrollbarOptions" data-simplebar-auto-hide="false" class="metadata-tickets-container">
         <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
           <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
@@ -21,32 +9,16 @@
           </li>
         </ul>
       </PerfectScrollbar>
-      <div
-        v-if="!creatingTicket && metadata && metadata.data && metadata.data.length"
-        class="no-selected-ticket-container"
-      >
-        <div class="card-container">
-          <div class="card">
-            <h1>Select a ticket to read</h1>
-            <p>Select a ticket to read and reply!</p>
-          </div>
-          <Cta msg="Create a ticket" color="#4346d4" @click="handleStartCreateTicket" />
-        </div>
-      </div>
-      <section v-if="creatingTicket === true" class="create-ticket-modal">
-        <CreateTicketModal @attemptClose="handleAttemptClose" @successfulSubmit="handleSuccessfulSubmit" />
-      </section>
       <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">
         <div class="inner-container">
           <div class="card-container">
             <div class="card">
-              <h1>You haven't created any<br />tickets yet</h1>
+              <h1>You don't have any<br />closed tickets!</h1>
               <p>
-                Hi Samantha, welcome to MingoDesk! To create a ticket, click the big blue button below or visit the
-                <a href="#">FAQ?</a> if you need any assistance
+                Hi {{ user.response.user.name.split(' ')[0] }}, you currenlty don't have any closed tickets, would you
+                like to create a <a href="#">ticket?</a>
               </p>
             </div>
-            <Cta msg="Create a ticket" color="#4346d4" @click="handleStartCreateTicket" />
             <div class="square" aria-hidden="true"></div>
             <div class="square" id="blue" aria-hidden="true"></div>
           </div>
@@ -59,38 +31,33 @@
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
 import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
-import CreateTicketModal from '../components/tickets/CreateTicketModal.vue';
 import { ITicket, ITicketMetaData, TicketStatus } from '../@types/ticket';
 import { IReturn } from '../helpers/api/requestGenerator';
 import { user } from '../helpers/store/userStore';
-import Cta from '../components/buttons/Cta.vue';
 import Header from '../components/Header.vue';
-import AreYouSureWidget from '../components/modals/AreYouSureWidget.vue';
 import { getPersonalTickets } from '../helpers/api/tickets/ticketController';
 
 const tries: Ref<number> = ref(0);
 const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
-const subheading: Ref<string> = ref(`You have 0 open tickets`);
+const subheading: Ref<string> = ref('You have 0 closed tickets');
 const creatingTicket: Ref<boolean> = ref(false);
 const selectedTicket: Ref<ITicket | null> = ref(null);
 const attemptClose: Ref<boolean> = ref(false);
+console.log(user.value);
 
 const getData = async () => {
   if (tries.value > 3) return;
-  const { response, errors } = await getPersonalTickets(TicketStatus.open);
+  const { response, errors } = await getPersonalTickets(TicketStatus.closed);
   if (errors && errors.response.status === 403) return tries.value++;
 
   authoredTickets.value = { ...response };
 };
 
 export default defineComponent({
-  name: 'YourTickets',
+  name: 'ClosedTickets',
   components: {
     MetaDataTicket,
-    Cta,
     Header,
-    CreateTicketModal,
-    AreYouSureWidget,
   },
   props: {
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
@@ -100,7 +67,7 @@ export default defineComponent({
       await getData();
       if (authoredTickets.value && authoredTickets.value.data && authoredTickets.value.data.length) {
         const ticketOrTickets = authoredTickets.value.data.length < 2 ? 'ticket' : 'tickets';
-        subheading.value = `You have ${authoredTickets.value.data.length} open ${ticketOrTickets}`;
+        subheading.value = `You have ${authoredTickets.value.data.length} closed ${ticketOrTickets}`;
       }
     });
 
@@ -116,67 +83,12 @@ export default defineComponent({
       creatingTicket,
       scrollbarOptions,
       attemptClose,
+      user,
     };
   },
   methods: {
-    async handleStartCreateTicket() {
-      const now = new Date();
-      const drafTicket = {
-        _id: 'DRAFT',
-        isDraft: true,
-        authorId: user.value!.response.user.providerId,
-        author: user.value!.response.user.name,
-        subject: {
-          type: 'doc',
-          content: [
-            {
-              type: 'heading',
-              attrs: {
-                level: 3,
-              },
-              content: [
-                {
-                  type: 'text',
-                  text: 'DRAFT: Your title here...',
-                },
-              ],
-            },
-          ],
-        },
-        authorOrganisationId: null,
-        status: 2,
-        createdAt: now,
-        isStarred: false,
-        tags: [],
-        labels: [],
-        isUpdated: false,
-        previewText: 'Some of your content will be here...',
-      };
-
-      if (authoredTickets.value.data) {
-        authoredTickets.value.data.splice(0, 0, drafTicket);
-      } else {
-        authoredTickets.value.data = [drafTicket];
-      }
-
-      creatingTicket.value = true;
-    },
     handleSelectTicket(ticketId: string) {
       selectedTicket.value = authoredTickets.value.data.find((el: ITicketMetaData) => el._id === ticketId);
-    },
-    handleAttemptClose() {
-      attemptClose.value = true;
-    },
-    handleDiscardClick() {
-      authoredTickets.value.data.shift();
-      creatingTicket.value = false;
-      attemptClose.value = false;
-    },
-    handleCancelClick() {
-      attemptClose.value = false;
-    },
-    handleSuccessfulSubmit() {
-      window.location.reload();
     },
   },
 });
@@ -284,7 +196,6 @@ h1 {
 
   .cta {
     margin-top: 10%;
-    width: 100%;
   }
 }
 
@@ -292,11 +203,8 @@ h1 {
   background-color: c.$bg-purple;
   padding: 0.2rem 4rem;
   border-radius: 8px;
+  text-align: center;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 30vh;
 
   p {
     margin-top: 5%;

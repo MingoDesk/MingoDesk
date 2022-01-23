@@ -18,8 +18,12 @@
       <p>Home</p>
     </div>
     <ul v-for="category in data" :key="category.label">
-      <li v-for="item in category.items" :key="item" :class="isActive(item) ? 'active' : null">
-        <router-link :to="`./${item}`">{{ item }}</router-link>
+      <li v-for="item in category.items" :key="item">
+        <router-link class="link" @click="handleSelect" :to="item"
+          ><button :class="isActive(item) ? 'active' : null">
+            <p>{{ item }}</p>
+          </button>
+        </router-link>
       </li>
     </ul>
   </aside>
@@ -35,7 +39,13 @@ export default defineComponent({
   name: 'Navigation',
   setup() {
     console.log(activeRef.value);
+    console.log(nav.value);
     return { data: nav.value, activeRef, isActive };
+  },
+  methods: {
+    handleSelect(props: any) {
+      this.activeRef = props.explicitOriginalTarget.firstChild.data || props.explicitOriginalTarget.textContent;
+    },
   },
 });
 </script>
@@ -47,11 +57,6 @@ export default defineComponent({
     width: 10rem;
     padding: 2rem;
     padding-bottom: 5rem;
-  }
-
-  #label2,
-  #label3 {
-    margin-top: 2rem;
   }
 
   .label {
@@ -68,33 +73,41 @@ export default defineComponent({
     }
   }
 
-  li {
-    &:nth-child(1) {
-      margin-top: 4%;
-    }
-    transition: 0.3s ease;
-    padding: 0.8rem 0;
-    margin-top: 0.3rem;
+  button {
+    border-radius: 0 4px 4px 0;
+    border: none;
+    background: none;
+    cursor: pointer;
     width: 80%;
+    padding: 0.8rem;
+    padding-left: 0;
 
-    a {
-      font-weight: semi-bold;
-      color: c.$alt-text;
-      text-decoration: none;
-      padding-left: 2rem;
-
-      &.router-link-exact-active {
+    &:hover {
+      p {
         color: c.$text;
       }
     }
+
+    p {
+      transition: 0.2s ease-in;
+      font-size: 1.2em;
+      color: c.$alt-text;
+      font-weight: 400;
+      font-family: sofia pro;
+      float: left;
+      margin-left: 2rem;
+    }
   }
 
-  .active,
-  li:hover {
-    background-color: c.$active;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-    a {
+  li:first-child {
+    margin-top: 5%;
+  }
+
+  .active {
+    background: c.$active;
+
+    p {
+      font-weight: 500;
       color: c.$text;
     }
   }
