@@ -1,0 +1,61 @@
+<template>
+  <section @click="handleFocusToggle" class="message-container">
+    <div class="top-content">
+      <div class="header">
+        <editor-content :editor="subject" />
+        <p>{{ readableDate }}</p>
+      </div>
+      <div class="buttons"></div>
+    </div>
+    <editor-content :editor="content" />
+  </section>
+</template>
+
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
+import { IMessage } from '../../@types/ticket';
+import { useEditor, EditorContent } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit';
+
+export default defineComponent({
+  name: 'Message',
+  components: { EditorContent },
+  props: {
+    message: {
+      type: Object as PropType<IMessage>,
+      required: true,
+    },
+  },
+  setup(props) {
+    const createdAt: Date = new Date(props.message.createdAt);
+    const readableDate: string = createdAt.toLocaleDateString();
+    console.log('we in');
+
+    const subject = useEditor({
+      content: props.message.subject,
+      extensions: [StarterKit],
+      editable: false,
+    });
+
+    const content = useEditor({
+      content: props.message.body,
+      extensions: [StarterKit],
+      editable: false,
+    });
+    return {
+      readableDate,
+      content,
+      subject,
+    };
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+@use '../../scss/colors' as c;
+
+.message-container {
+  min-width: 40%;
+  min-height: 30vh;
+}
+</style>

@@ -112,7 +112,6 @@ ul {
 }
 
 li {
-  padding-top: 0.5rem;
   list-style: none;
 }
 

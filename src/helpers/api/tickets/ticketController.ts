@@ -5,7 +5,7 @@ import { user } from '../../store/userStore';
 import { TicketStatus } from '../../../@types/ticket';
 
 export const getTicket = async (ticketId: string): Promise<IReturn> => {
-  const data = await get(`${baseUrl}/tickets/`, { params: { ticketId }, withCredentials: true });
+  const data = await get(`${baseUrl}/tickets/${ticketId}`, { withCredentials: true });
   return data;
 };
 
