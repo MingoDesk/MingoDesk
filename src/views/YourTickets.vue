@@ -21,7 +21,10 @@
           </li>
         </ul>
       </PerfectScrollbar>
-      <div v-if="!creatingTicket && !selectedTicket" class="no-selected-ticket-container">
+      <div
+        v-if="!creatingTicket && !selectedTicket && !(!metadata || !metadata.data)"
+        class="no-selected-ticket-container"
+      >
         <div class="card-container">
           <div class="card">
             <h1>Select a ticket to read</h1>
@@ -33,7 +36,7 @@
       <section v-if="selectedTicket" class="selected-ticket-container">
         <TicketView :ticketId="selectedTicket._id" :author="selectedTicket.author" :subject="selectedTicket.subject" />
       </section>
-      <section v-if="creatingTicket === true && !selectedTicket" class="create-ticket-modal">
+      <section v-if="creatingTicket && !selectedTicket" class="create-ticket-modal">
         <CreateTicketModal @attemptClose="handleAttemptClose" @successfulSubmit="handleSuccessfulSubmit" />
       </section>
       <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">

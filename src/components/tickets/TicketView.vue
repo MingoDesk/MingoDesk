@@ -49,5 +49,6 @@ export default defineComponent({
   max-width: 55vw;
   padding: 1rem;
   background: c.$ticket-modal-bg;
+  border-radius: 4px;
 }
 </style>
