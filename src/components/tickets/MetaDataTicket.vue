@@ -24,7 +24,6 @@ import Tag from './MetaDataTag.vue';
 import { TicketStatus, ITicketMetaData } from '../../@types/ticket';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
-import Heading from '@tiptap/extension-heading';
 
 interface ITicketStyle {
   backgroundColor: string;
@@ -58,14 +57,7 @@ export default defineComponent({
 
     const subjectEditor = useEditor({
       content: props.metadata.subject,
-      extensions: [
-        StarterKit,
-        Heading.configure({
-          HTMLAttributes: {
-            class: 'subject-header',
-          },
-        }),
-      ],
+      extensions: [StarterKit],
       editable: false,
     });
 

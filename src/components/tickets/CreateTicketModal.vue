@@ -89,12 +89,6 @@ export default defineComponent({
   }
 }
 
-.ProseMirror {
-  max-width: 35rem;
-  word-wrap: break-word;
-  white-space: break-spaces;
-}
-
 .title-edior .ProseMirror p {
   font-size: 1.1em;
   font-weight: 500;
