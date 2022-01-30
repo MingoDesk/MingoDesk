@@ -31,7 +31,6 @@
         </div>
       </div>
       <section v-if="selectedTicket" class="selected-ticket-container">
-        <p>Testing {{ selectedTicket._id }}</p>
         <TicketView :ticketId="selectedTicket._id" :author="selectedTicket.author" :subject="selectedTicket.subject" />
       </section>
       <section v-if="creatingTicket === true && !selectedTicket" class="create-ticket-modal">

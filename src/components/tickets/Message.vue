@@ -27,9 +27,8 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const createdAt: Date = new Date(props.message.createdAt);
-    const readableDate: string = createdAt.toLocaleDateString();
-    console.log('we in');
+    const createdAt: string = new Date(props.message.createdAt).toUTCString();
+    const readableDate: string = createdAt.toString();
 
     const subject = useEditor({
       content: props.message.subject,

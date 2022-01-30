@@ -2,7 +2,6 @@
   <main class="ticket-view-container">
     <ul>
       <li v-for="message in messages" :key="message.id">
-        <p>Testing {{ messages }}</p>
         <Message :message="message" />
       </li>
     </ul>
@@ -10,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType, ref } from 'vue';
+import { defineComponent, PropType, ref, watchEffect } from 'vue';
 import { getTicket } from '../../helpers/api/tickets/ticketController';
 import Message from './Message.vue';
 import { IReturn } from '../../helpers/api/requestGenerator';
@@ -28,7 +27,7 @@ export default defineComponent({
     const messages = ref<IReturn['response']>([]);
     const title = ref<IReturn['response']>([]);
 
-    onMounted(async () => {
+    watchEffect(async () => {
       const data = await getTicket(props.ticketId);
       messages.value = data.response.data.messages;
     });
