@@ -15,16 +15,13 @@
     <Header :subheading="subheading" routeName="Your tickets" />
     <div class="your-tickets">
       <PerfectScrollbar :options="scrollbarOptions" data-simplebar-auto-hide="false" class="metadata-tickets-container">
-        <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
-          <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
+        <ul v-if="metadata && metadata.length" class="metadata-tickets">
+          <li v-for="data in metadata" :key="data._id" @click="handleSelectTicket(data._id)">
             <MetaDataTicket :metadata="data" :isDraft="data.isDraft" />
           </li>
         </ul>
       </PerfectScrollbar>
-      <div
-        v-if="!creatingTicket && !selectedTicket && !(!metadata || !metadata.data)"
-        class="no-selected-ticket-container"
-      >
+      <div v-if="!creatingTicket && !selectedTicket && !!metadata" class="no-selected-ticket-container">
         <div class="card-container">
           <div class="card">
             <h1>Select a ticket to read</h1>
@@ -39,7 +36,7 @@
       <section v-if="creatingTicket && !selectedTicket" class="create-ticket-modal">
         <CreateTicketModal @attemptClose="handleAttemptClose" @successfulSubmit="handleSuccessfulSubmit" />
       </section>
-      <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">
+      <section v-if="!metadata && !creatingTicket" class="no-tickets-container">
         <div class="inner-container">
           <div class="card-container">
             <div class="card">
@@ -63,14 +60,15 @@
 import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
 import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
 import CreateTicketModal from '../components/tickets/CreateTicketModal.vue';
-import { ITicket, ITicketMetaData, TicketStatus } from '../@types/ticket';
-import { IReturn } from '../helpers/api/requestGenerator';
-import { user } from '../helpers/store/userStore';
+import { ITicketMetaData, TicketStatus } from '../@types/ticket';
+import { userStore } from '../helpers/stores/userStore';
 import Cta from '../components/buttons/Cta.vue';
 import Header from '../components/Header.vue';
 import AreYouSureWidget from '../components/modals/AreYouSureWidget.vue';
 import { getPersonalTickets } from '../helpers/api/tickets/ticketController';
 import TicketView from '../components/tickets/TicketView.vue';
+import { ticketStore } from '../helpers/stores/ticketStore';
+import { storeToRefs } from 'pinia';
 const tries: Ref<number> = ref(0);
 
 export default defineComponent({
@@ -87,25 +85,28 @@ export default defineComponent({
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
   },
   setup() {
-    const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
     const subheading: Ref<string> = ref(`You have 0 open tickets`);
     const creatingTicket: Ref<boolean> = ref(false);
-    const selectedTicket: Ref<ITicket | null> = ref(null);
+    const selectedTicket: Ref<ITicketMetaData | undefined> = ref(undefined);
     const attemptClose: Ref<boolean> = ref(false);
+    const userStateStore = userStore();
+
+    const ticketState = ticketStore();
+    const ticketRef = storeToRefs(ticketState);
 
     const getData = async () => {
       if (tries.value > 3) return;
-      const { response, errors } = await getPersonalTickets(TicketStatus.open);
+      const { response, errors } = await getPersonalTickets(TicketStatus.open, userStateStore.user.providerId);
       if (errors && errors.response.status === 403) return tries.value++;
 
-      authoredTickets.value = { ...response };
+      ticketState.setMetadata(response.data);
     };
 
     onMounted(async () => {
       await getData();
-      if (authoredTickets.value && authoredTickets.value.data && authoredTickets.value.data.length) {
-        const ticketOrTickets = authoredTickets.value.data.length < 2 ? 'ticket' : 'tickets';
-        subheading.value = `You have ${authoredTickets.value.data.length} open ${ticketOrTickets}`;
+      if (ticketRef.metadata.value && ticketRef.metadata.value && ticketRef.metadata.value.length) {
+        const ticketOrTickets = ticketRef.metadata.value.length < 2 ? 'ticket' : 'tickets';
+        subheading.value = `You have ${ticketRef.metadata.value.length} open ${ticketOrTickets}`;
       }
     });
 
@@ -116,7 +117,7 @@ export default defineComponent({
     };
 
     return {
-      metadata: authoredTickets,
+      metadata: ticketRef.metadata,
       subheading,
       creatingTicket,
       scrollbarOptions,
@@ -127,8 +128,8 @@ export default defineComponent({
         const drafTicket = {
           _id: 'DRAFT',
           isDraft: true,
-          authorId: user.value!.response.user.providerId,
-          author: user.value!.response.user.name,
+          authorId: userStateStore.user.providerId,
+          author: userStateStore.user.name,
           subject: {
             type: 'doc',
             content: [
@@ -148,7 +149,7 @@ export default defineComponent({
           },
           authorOrganisationId: null,
           status: 2,
-          createdAt: now,
+          createdAt: now.toString(),
           isStarred: false,
           tags: [],
           labels: [],
@@ -156,22 +157,27 @@ export default defineComponent({
           previewText: 'Some of your content will be here...',
         };
 
-        if (authoredTickets.value.data) {
-          authoredTickets.value.data.splice(0, 0, drafTicket);
+        if (ticketRef.metadata.value) {
+          ticketRef.metadata.value.splice(0, 0, drafTicket);
         } else {
-          authoredTickets.value.data = [drafTicket];
+          ticketRef.metadata.value = [drafTicket];
         }
 
         creatingTicket.value = true;
       },
       handleSelectTicket(ticketId: string) {
-        selectedTicket.value = authoredTickets.value.data.find((el: ITicketMetaData) => el._id === ticketId);
+        const ticket: ITicketMetaData | undefined = ticketState.metadata.find(
+          (el: ITicketMetaData) => el._id === ticketId
+        );
+
+        selectedTicket.value = ticket;
+        // console.log(ticketState.metadata.find((el: ITicketMetaData) => el._id === ticketId));
       },
       handleAttemptClose() {
         attemptClose.value = true;
       },
       handleDiscardClick() {
-        authoredTickets.value.data.shift();
+        ticketRef.metadata.value.shift();
         creatingTicket.value = false;
         attemptClose.value = false;
       },

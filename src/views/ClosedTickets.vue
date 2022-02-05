@@ -9,14 +9,17 @@
           </li>
         </ul>
       </PerfectScrollbar>
-      <section v-if="(!metadata || !metadata.data) && !creatingTicket" class="no-tickets-container">
+      <section
+        v-if="user && user.name && (!metadata || !metadata.data) && !creatingTicket"
+        class="no-tickets-container"
+      >
         <div class="inner-container">
           <div class="card-container">
             <div class="card">
               <h1>You don't have any<br />closed tickets!</h1>
               <p>
-                Hi {{ user.response.user.name.split(' ')[0] }}, you currenlty don't have any closed tickets, would you
-                like to create a <a href="#">ticket?</a>
+                Hi {{ user.name.split(' ')[0] }}, you currenlty don't have any closed tickets, would you like to create
+                a <a href="#">ticket?</a>
               </p>
             </div>
             <div class="square" aria-hidden="true"></div>
@@ -33,25 +36,10 @@ import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
 import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
 import { ITicket, ITicketMetaData, TicketStatus } from '../@types/ticket';
 import { IReturn } from '../helpers/api/requestGenerator';
-import { user } from '../helpers/store/userStore';
+import { userStore } from '../helpers/stores/userStore';
 import Header from '../components/Header.vue';
 import { getPersonalTickets } from '../helpers/api/tickets/ticketController';
-
-const tries: Ref<number> = ref(0);
-const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
-const subheading: Ref<string> = ref('You have 0 closed tickets');
-const creatingTicket: Ref<boolean> = ref(false);
-const selectedTicket: Ref<ITicket | null> = ref(null);
-const attemptClose: Ref<boolean> = ref(false);
-console.log(user.value);
-
-const getData = async () => {
-  if (tries.value > 3) return;
-  const { response, errors } = await getPersonalTickets(TicketStatus.closed);
-  if (errors && errors.response.status === 403) return tries.value++;
-
-  authoredTickets.value = { ...response };
-};
+import { storeToRefs } from 'pinia';
 
 export default defineComponent({
   name: 'ClosedTickets',
@@ -63,6 +51,22 @@ export default defineComponent({
     unnassignedTickets: { type: Array as PropType<Array<ITicketMetaData>> },
   },
   setup() {
+    const tries: Ref<number> = ref(0);
+    const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
+    const subheading: Ref<string> = ref('You have 0 closed tickets');
+    const creatingTicket: Ref<boolean> = ref(false);
+    const selectedTicket: Ref<ITicket | null> = ref(null);
+    const attemptClose: Ref<boolean> = ref(false);
+    const userStateStore = userStore();
+
+    const getData = async () => {
+      if (tries.value > 3) return;
+      const { response, errors } = await getPersonalTickets(TicketStatus.closed, userStateStore.user.providerId);
+      if (errors && errors.response.status === 403) return tries.value++;
+
+      authoredTickets.value = { ...response };
+    };
+
     onMounted(async () => {
       await getData();
       if (authoredTickets.value && authoredTickets.value.data && authoredTickets.value.data.length) {
@@ -83,12 +87,14 @@ export default defineComponent({
       creatingTicket,
       scrollbarOptions,
       attemptClose,
-      user,
+      user: storeToRefs(userStateStore).user,
+      selectedTicket,
+      authoredTickets,
     };
   },
   methods: {
     handleSelectTicket(ticketId: string) {
-      selectedTicket.value = authoredTickets.value.data.find((el: ITicketMetaData) => el._id === ticketId);
+      this.selectedTicket = this.authoredTickets.data.find((el: ITicketMetaData) => el._id === ticketId);
     },
   },
 });

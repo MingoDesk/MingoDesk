@@ -12,7 +12,7 @@ export interface IMessage {
   author: string;
   subject: JSONContent;
   body: JSONContent;
-  createdAt: Date;
+  createdAt: string;
   id: string;
 }
 
@@ -37,7 +37,7 @@ export interface ITicketMetaData {
   author: string;
   status: TicketStatus;
   assignee?: string;
-  createdAt: Date;
+  createdAt: string;
   isStarred: boolean;
   tags: ILabel[];
   labels: ILabel[];

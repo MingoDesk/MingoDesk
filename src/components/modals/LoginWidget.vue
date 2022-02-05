@@ -36,7 +36,7 @@ import { defineComponent } from 'vue';
 import Cta from '../buttons/Cta.vue';
 import OAuthCta from '../buttons/OAuthCta.vue';
 import { baseUrl } from '../../config/config.json';
-import { isLoggedIn } from '../../helpers/store/userStore';
+import { isLoggedIn } from '../../helpers/stores/userStore';
 
 export default defineComponent({
   name: 'Login widget',
@@ -48,8 +48,6 @@ export default defineComponent({
     handleBasicLogin(event: Event) {
       if (event) {
         this.handleLoginAttempt();
-        console.log(event);
-        console.log("we're in");
       }
     },
     handleGoogleLogin(event: Event) {
