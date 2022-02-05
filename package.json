@@ -18,11 +18,11 @@
     "@tiptap/starter-kit": "^2.0.0-beta.155",
     "@tiptap/vue-3": "^2.0.0-beta.83",
     "axios": "^0.21.1",
+    "pinia": "^2.0.0-rc.10",
     "simplebar-vue": "^1.6.8",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
-    "vue3-perfect-scrollbar": "^1.5.5",
-    "vuex": "^4.0.0-0"
+    "vue3-perfect-scrollbar": "^1.5.5"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.18.0",

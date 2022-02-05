@@ -19,9 +19,9 @@
     </div>
     <ul v-for="category in data" :key="category.label">
       <li v-for="item in category.items" :key="item">
-        <router-link class="link" @click="handleSelect" :to="item"
+        <router-link class="link" @click="handleSelect(item)" :to="item"
           ><button :class="isActive(item) ? 'active' : null">
-            <p>{{ item }}</p>
+            <p>{{ capitalize(item) }}</p>
           </button>
         </router-link>
       </li>
@@ -30,22 +30,30 @@
 </template>
 
 <script lang="ts">
+import { storeToRefs } from 'pinia';
+import router from '../router/index';
 import { defineComponent, ref } from 'vue';
-import { nav } from '../helpers/store/userStore';
-const activeRef = ref(nav.value![0].items[0]);
-const isActive = (name: string) => activeRef.value === name;
+import { userStore } from '../helpers/stores/userStore';
 
 export default defineComponent({
   name: 'Navigation',
   setup() {
-    console.log(activeRef.value);
-    console.log(nav.value);
-    return { data: nav.value, activeRef, isActive };
-  },
-  methods: {
-    handleSelect(props: any) {
-      this.activeRef = props.explicitOriginalTarget.firstChild.data || props.explicitOriginalTarget.textContent;
-    },
+    const userStateStore = userStore();
+    const navRef = storeToRefs(userStateStore).nav;
+
+    // active
+    const activeRef = ref<string | null>(null);
+    const isActive = (name: string) => {
+      return router.currentRoute.value.name === name;
+    };
+    const handleSelect = (route: string) => {
+      activeRef.value = route;
+    };
+    const capitalize = (str: string) => {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+
+    return { data: navRef, activeRef, isActive, handleSelect, capitalize };
   },
 });
 </script>

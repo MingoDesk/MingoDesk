@@ -1,18 +1,22 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import AppHome from '../views/AppHome.vue';
+import YourTickets from '../views/YourTickets.vue';
 import ClosedTickets from '../views/ClosedTickets.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
+    name: 'home',
     component: AppHome,
   },
   {
-    path: '/YourTickets',
-    component: AppHome,
+    path: '/home',
+    name: 'home',
+    component: YourTickets,
   },
   {
-    path: '/ClosedTickets',
+    path: '/closed',
+    name: 'closed',
     component: ClosedTickets,
   },
 ];

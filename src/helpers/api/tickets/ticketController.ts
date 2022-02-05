@@ -1,7 +1,7 @@
 import { get, patch, post, IReturn } from '../requestGenerator';
 import { baseUrl } from '../../../config/config.json';
 import { JSONContent } from '@tiptap/core';
-import { user } from '../../store/userStore';
+import { User } from '../../stores/userStore';
 import { TicketStatus } from '../../../@types/ticket';
 
 export const getTicket = async (ticketId: string): Promise<IReturn> => {
@@ -35,8 +35,8 @@ export const replyTicket = async (ticketId: string, message: string): Promise<IR
   return data;
 };
 
-export const getPersonalTickets = async (status: TicketStatus): Promise<IReturn> => {
-  const data = await get(`${baseUrl}/tickets/authored/feed/${user.value!.response.user.providerId}`, {
+export const getPersonalTickets = async (status: TicketStatus, providerId: User['providerId']): Promise<IReturn> => {
+  const data = await get(`${baseUrl}/tickets/authored/feed/${providerId}`, {
     withCredentials: true,
     params: { status },
   });

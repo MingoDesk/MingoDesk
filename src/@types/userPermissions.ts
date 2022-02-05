@@ -14,11 +14,11 @@ export interface IUserPermissions {
   permissions: UserPermissions;
 }
 
-export interface IUser {
+export interface IDefaultUserPerms {
   permissions: [UserPermissions.CreateTicket, UserPermissions.ReplyTicket, UserPermissions.ViewCreatedTickets];
 }
 
-export const User = {
+export const DefaultUser = {
   permissions: [UserPermissions.CreateTicket, UserPermissions.ReplyTicket, UserPermissions.ViewCreatedTickets],
 };
 

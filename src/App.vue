@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <Navigation />
-    <div id="login-widget-container" v-if="!user || user.errors" class="scroll">
+    <div id="login-widget-container" v-if="!user || !user.providerId" class="scroll">
       <div id="login-widget-inner-container">
         <LoginWidget />
       </div>
@@ -16,9 +16,9 @@
 import { defineComponent, onMounted } from 'vue';
 import { getUser } from './helpers/api/user/userController';
 import LoginWidget from './components/modals/LoginWidget.vue';
-import { user, userPermissions, nav } from './helpers/store/userStore';
-import { getNav } from './helpers/getNav';
+import { userStore } from './helpers/stores/userStore';
 import Navigation from './components/Nav.vue';
+import { storeToRefs } from 'pinia';
 
 export default defineComponent({
   components: {
@@ -26,21 +26,17 @@ export default defineComponent({
     Navigation,
   },
   setup() {
-    onMounted(async () => {
-      user.value = await getUser();
+    const userStateStore = userStore();
 
-      if (user.value.errors && user.value.errors.status !== 200) {
-        user.value = null;
+    onMounted(async () => {
+      const userData = await getUser();
+
+      if (!userData.errors) {
+        userStateStore.setUser(userData.response.user);
       }
     });
 
-    if (user.value && user.value.response) {
-      userPermissions.value = user.value.response.user.permissions;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      nav.value = getNav(userPermissions.value);
-    }
-    return { user };
+    return { user: storeToRefs(userStateStore).user };
   },
 });
 </script>
@@ -55,6 +51,15 @@ export default defineComponent({
   -moz-osx-font-smoothing: grayscale;
   background: c.$bg;
   margin: 0;
+  padding: 0;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+ul {
   padding: 0;
 }
 

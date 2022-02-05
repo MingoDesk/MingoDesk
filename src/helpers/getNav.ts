@@ -1,15 +1,14 @@
+import { User } from './stores/userStore';
 import {
   IOrgUser,
   IStaff,
   IStaffAdmin,
   ISysAdmin,
-  IUser,
+  IDefaultUserPerms,
   OrgUser,
   Staff,
   StaffAdmin,
   SysAdmin,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
 } from '../@types/userPermissions';
 
 export interface Navigation {
@@ -17,22 +16,15 @@ export interface Navigation {
   items: string[];
 }
 
-export const check = (
-  userPerms:
-    | IUser['permissions']
-    | IOrgUser['permissions']
-    | ISysAdmin['permissions']
-    | IStaff['permissions']
-    | IStaffAdmin['permissions'],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ref: any[]
-): boolean => ref.every((v) => userPerms.includes(v));
+export const check = (permissions: User['permissions'], ref: any[]): boolean => {
+  return ref.every((v) => permissions.includes(v));
+};
 
-let nav: Navigation[] = [{ label: 'Tickets', items: ['YourTickets', 'ClosedTickets'] }];
+let nav: Navigation[] = [{ label: 'Tickets', items: ['home', 'closed'] }];
 
 export const getNav = (
   permissions?:
-    | IUser['permissions']
+    | IDefaultUserPerms['permissions']
     | IOrgUser['permissions']
     | ISysAdmin['permissions']
     | IStaff['permissions']
@@ -48,14 +40,14 @@ export const getNav = (
     nav = [
       {
         label: 'Customer tiers',
-        items: ['Unassigned', 'YourTickets', 'ClosedTickets', 'SnoozedTickets', 'KanbanView'],
+        items: ['Unassigned', 'home', 'closed', 'SnoozedTickets', 'KanbanView'],
       },
     ];
   } else if (check(permissions, OrgUser.permissions)) {
     nav = [
       {
         label: 'Tickets',
-        items: ['GroupTickets', 'ClosedTickets', 'YourTickets'],
+        items: ['GroupTickets', 'closed', 'home'],
       },
     ];
   }

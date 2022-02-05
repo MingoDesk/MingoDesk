@@ -1,7 +1,7 @@
 <template>
   <main class="ticket-view-container">
     <ul>
-      <li v-for="message in messages" :key="message.id">
+      <li v-for="message in ticket.messages" :key="message.id">
         <Message :message="message" />
       </li>
     </ul>
@@ -9,11 +9,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watchEffect } from 'vue';
+import { defineComponent, PropType, watchEffect } from 'vue';
 import { getTicket } from '../../helpers/api/tickets/ticketController';
 import Message from './Message.vue';
-import { IReturn } from '../../helpers/api/requestGenerator';
 import { IMessage } from '../../@types/ticket';
+import { ticketStore } from '../../helpers/stores/ticketStore';
+import { storeToRefs } from 'pinia';
 
 export default defineComponent({
   name: 'TicketView',
@@ -24,17 +25,15 @@ export default defineComponent({
     author: { type: String, required: true },
   },
   setup(props) {
-    const messages = ref<IReturn['response']>([]);
-    const title = ref<IReturn['response']>([]);
+    const ticketState = ticketStore();
 
     watchEffect(async () => {
       const data = await getTicket(props.ticketId);
-      messages.value = data.response.data.messages;
+      ticketState.setTicket(data.response.data);
     });
 
     return {
-      messages,
-      title,
+      ticket: storeToRefs(ticketState).ticket,
     };
   },
 });
