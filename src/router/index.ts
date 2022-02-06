@@ -6,7 +6,7 @@ import ClosedTickets from '../views/ClosedTickets.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
+    name: 'index',
     component: AppHome,
   },
   {
