@@ -1,9 +1,6 @@
 import { UserPermissions } from '../../@types/userPermissions';
-import { ref, Ref } from 'vue';
 import { getNav, Navigation } from '../getNav';
 import { defineStore } from 'pinia';
-
-export const isLoggedIn: Ref<boolean> = ref(false);
 
 export type User = {
   permissions: UserPermissions[];

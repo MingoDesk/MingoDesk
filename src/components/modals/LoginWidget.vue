@@ -36,29 +36,19 @@ import { defineComponent } from 'vue';
 import Cta from '../buttons/Cta.vue';
 import OAuthCta from '../buttons/OAuthCta.vue';
 import { baseUrl } from '../../config/config.json';
-import { isLoggedIn } from '../../helpers/stores/userStore';
 
 export default defineComponent({
   name: 'Login widget',
   components: { Cta, OAuthCta },
   methods: {
-    handleLoginAttempt() {
-      isLoggedIn.value = true;
-    },
-    handleBasicLogin(event: Event) {
-      if (event) {
-        this.handleLoginAttempt();
-      }
-    },
+    //handleBasicLogin(event: Event) {},
     handleGoogleLogin(event: Event) {
       if (event) {
-        this.handleLoginAttempt();
         window.location.replace(`${baseUrl}/auth/login/google`);
       }
     },
     handleSlackLogin(event: Event) {
       if (event) {
-        this.handleLoginAttempt();
         window.location.replace(`${baseUrl}/auth/login/slack`);
       }
     },
