@@ -2,7 +2,7 @@
   <div class="editor">
     <div class="editor-top">
       <div class="editor-top-inputs">
-        <editor-content class="title-edior editor-input" :editor="subjectEditor" />
+        <input type="text" class="subject-input" v-model="subject" placeholder="Your title here...." min="2" max="80" />
         <editor-content class="body-editor editor-input" :editor="editor" />
       </div>
       <div class="editor-top-buttons">
@@ -24,7 +24,7 @@ import Highlight from '@tiptap/extension-highlight';
 import Document from '@tiptap/extension-document';
 import Typography from '@tiptap/extension-typography';
 import Placeholder from '@tiptap/extension-placeholder';
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { createTicket } from '../../helpers/api/tickets/ticketController';
 import Cta from '../buttons/Cta.vue';
 
@@ -34,14 +34,7 @@ export default defineComponent({
     Cta,
   },
   setup() {
-    const subjectEditor = useEditor({
-      extensions: [
-        StarterKit,
-        Placeholder.configure({
-          placeholder: 'Your title here...',
-        }),
-      ],
-    });
+    const subject = ref<string>('');
 
     const editor = useEditor({
       extensions: [
@@ -55,11 +48,11 @@ export default defineComponent({
       ],
     });
 
-    return { editor, subjectEditor };
+    return { editor, subject };
   },
   methods: {
     async handleSubmit() {
-      const newTicket = await createTicket(this.editor.getJSON(), this.subjectEditor.getJSON());
+      const newTicket = await createTicket(this.editor.getJSON(), this.subject);
       if (!newTicket) throw new Error('Something whent horribly wrong creating the ticket, please try again');
       if (newTicket.errors && newTicket.errors.status !== 200) throw new Error(newTicket.errors);
       if (newTicket.response) this.$emit('successfulSubmit');
@@ -114,6 +107,10 @@ export default defineComponent({
   }
 }
 
+.editor-input {
+  margin-top: 3%;
+}
+
 .editor-top,
 .editor-top-buttons {
   display: flex;
@@ -121,6 +118,25 @@ export default defineComponent({
 
 .editor-top {
   justify-content: space-between;
+}
+
+.subject-input {
+  background: none;
+  color: c.$text;
+  border: none;
+  font-size: 1.2em;
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.subject-input:focus {
+  outline: c.$bg;
+}
+
+.ProseMirror-focused {
+  outline: c.$bg;
 }
 
 .editor-top-buttons .cta:nth-child(1) {
@@ -134,7 +150,7 @@ h3 {
   color: c.$alt-text;
 }
 
-.body-editor {
+.body-input {
   margin-top: 1rem;
 }
 

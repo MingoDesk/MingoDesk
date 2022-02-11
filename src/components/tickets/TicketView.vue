@@ -1,8 +1,8 @@
 <template>
   <main class="ticket-view-container">
     <ul>
-      <li v-for="message in ticket.messages" :key="message.id">
-        <Message :message="message" />
+      <li v-for="(message, index) in ticket.messages" :key="message.id">
+        <Message :message="message" :subject="index === 0 ? ticket.subject : null" />
       </li>
     </ul>
   </main>
@@ -26,14 +26,15 @@ export default defineComponent({
   },
   setup(props) {
     const ticketState = ticketStore();
-
     watchEffect(async () => {
       const data = await getTicket(props.ticketId);
       ticketState.setTicket(data.response.data);
     });
 
+    const ticketRef = storeToRefs(ticketState).ticket;
+
     return {
-      ticket: storeToRefs(ticketState).ticket,
+      ticket: ticketRef,
     };
   },
 });
@@ -46,8 +47,12 @@ export default defineComponent({
   width: 50vw;
   min-width: 30vw;
   max-width: 55vw;
-  padding: 1rem;
-  background: c.$ticket-modal-bg;
-  border-radius: 4px;
+  margin: 0;
+
+  li {
+    background: c.$ticket-modal-bg;
+    border-radius: 4px;
+    padding: 1rem;
+  }
 }
 </style>

@@ -43,8 +43,8 @@ export const getPersonalTickets = async (status: TicketStatus, providerId: User[
   return { ...data };
 };
 
-export const createTicket = async (body: JSONContent, subject: JSONContent): Promise<IReturn> => {
-  const data = await post(`${baseUrl}/tickets/new`, { body: { ...body }, subject: { ...subject } });
+export const createTicket = async (body: JSONContent, subject: string): Promise<IReturn> => {
+  const data = await post(`${baseUrl}/tickets/new`, { body: { ...body }, subject });
   return data;
 };
 
