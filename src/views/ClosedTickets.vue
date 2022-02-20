@@ -1,18 +1,15 @@
 <template>
-  <main class="Closed-tickets-container">
+  <main class="closed-tickets-container">
     <Header :subheading="subheading" routeName="Closed tickets" />
-    <div class="Closed-tickets">
+    <div class="closed-tickets">
       <PerfectScrollbar :options="scrollbarOptions" data-simplebar-auto-hide="false" class="metadata-tickets-container">
-        <ul v-if="metadata && metadata.data && metadata.data.length" class="metadata-tickets">
-          <li v-for="data in metadata.data" :key="data._id" @click="handleSelectTicket(data._id)">
+        <ul v-if="metadata && metadata.length" class="metadata-tickets">
+          <li v-for="data in metadata" :key="data._id" @click="handleSelectTicket(data._id)">
             <MetaDataTicket :metadata="data" :isDraft="data.isDraft" />
           </li>
         </ul>
       </PerfectScrollbar>
-      <section
-        v-if="user && user.name && (!metadata || !metadata.data) && !creatingTicket"
-        class="no-tickets-container"
-      >
+      <section v-if="metadata && metadata.data" class="no-tickets-container">
         <div class="inner-container">
           <div class="card-container">
             <div class="card">
@@ -34,12 +31,14 @@
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, Ref } from 'vue';
 import MetaDataTicket from '../components/tickets/MetaDataTicket.vue';
-import { ITicket, ITicketMetaData, TicketStatus } from '../@types/ticket';
-import { IReturn } from '../helpers/api/requestGenerator';
+import { ITicketMetaData, TicketStatus } from '../@types/ticket';
 import { userStore } from '../helpers/stores/userStore';
 import Header from '../components/Header.vue';
 import { getPersonalTickets } from '../helpers/api/tickets/ticketController';
 import { storeToRefs } from 'pinia';
+import { ticketStore } from '../helpers/stores/ticketStore';
+import { scrollbarOptions } from '../config/scrollbarOptions';
+import { getTicketOrTickets } from '../helpers/functions/ticketOrTickets';
 
 export default defineComponent({
   name: 'ClosedTickets',
@@ -52,50 +51,44 @@ export default defineComponent({
   },
   setup() {
     const tries: Ref<number> = ref(0);
-    const authoredTickets: Ref<IReturn['response'] | null> = ref(null);
     const subheading: Ref<string> = ref('You have 0 closed tickets');
     const creatingTicket: Ref<boolean> = ref(false);
-    const selectedTicket: Ref<ITicket | null> = ref(null);
+    const selectedTicket: Ref<ITicketMetaData | undefined> = ref(undefined);
     const attemptClose: Ref<boolean> = ref(false);
     const userStateStore = userStore();
+    const ticketState = ticketStore();
+    const ticketRef = storeToRefs(ticketState);
 
     const getData = async () => {
       if (tries.value > 3) return;
       const { response, errors } = await getPersonalTickets(TicketStatus.closed, userStateStore.user.providerId);
       if (errors && errors.response.status === 403) return tries.value++;
 
-      authoredTickets.value = { ...response };
+      ticketState.setMetadata(response.data);
     };
 
     onMounted(async () => {
       await getData();
-      if (authoredTickets.value && authoredTickets.value.data && authoredTickets.value.data.length) {
-        const ticketOrTickets = authoredTickets.value.data.length < 2 ? 'ticket' : 'tickets';
-        subheading.value = `You have ${authoredTickets.value.data.length} closed ${ticketOrTickets}`;
+      if (ticketRef.metadata.value && ticketRef.metadata.value.length) {
+        subheading.value = getTicketOrTickets(ticketRef.metadata.value);
       }
     });
 
-    const scrollbarOptions = {
-      maxScrollbarLength: 40,
-      wheelSpeed: 0.2,
-      swipeEasing: true,
-    };
-
     return {
-      metadata: authoredTickets,
+      metadata: ticketRef.metadata,
       subheading,
       creatingTicket,
       scrollbarOptions,
       attemptClose,
       user: storeToRefs(userStateStore).user,
       selectedTicket,
-      authoredTickets,
+      handleSelectTicket(ticketId: string) {
+        const ticket: ITicketMetaData | undefined = ticketState.metadata.find(
+          (el: ITicketMetaData) => el._id === ticketId
+        );
+        selectedTicket.value = ticket;
+      },
     };
-  },
-  methods: {
-    handleSelectTicket(ticketId: string) {
-      this.selectedTicket = this.authoredTickets.data.find((el: ITicketMetaData) => el._id === ticketId);
-    },
   },
 });
 </script>
@@ -103,24 +96,8 @@ export default defineComponent({
 <style lang="scss">
 @use '../scss/colors' as c;
 
-.your-tickets-container {
+.closed-tickets-container {
   overflow-x: hidden;
-}
-
-.are-you-sure-container {
-  position: fixed;
-  top: 0%;
-  left: 0;
-  width: 100%;
-  box-sizing: border-box;
-  height: 100vh;
-  overflow-x: hidden;
-  background: rgba(0, 0, 0, 0.835);
-  overflow: hidden;
-  z-index: 200;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 header {
@@ -152,14 +129,6 @@ h1 {
 
 .buttons {
   display: flex;
-}
-
-.create-ticket-modal {
-  width: inherit;
-  min-width: 30rem;
-  max-width: 60%;
-  margin-top: 0.5%;
-  max-height: 50vh;
 }
 
 .no-tickets-container {
@@ -221,7 +190,7 @@ h1 {
   }
 }
 
-.your-tickets {
+.closed-tickets {
   display: flex;
   justify-content: space-between;
   width: 100%;

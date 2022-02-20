@@ -44,7 +44,7 @@ export default defineComponent({
       sideColor: '#4346D4',
       updated: 'none',
     };
-    if (props.metadata.status === TicketStatus.updated) {
+    if (props.metadata.updated === true) {
       ticketStyle.updated = 'true';
     }
 

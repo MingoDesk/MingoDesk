@@ -69,7 +69,8 @@ import { getPersonalTickets } from '../helpers/api/tickets/ticketController';
 import TicketView from '../components/tickets/TicketView.vue';
 import { ticketStore } from '../helpers/stores/ticketStore';
 import { storeToRefs } from 'pinia';
-const tries: Ref<number> = ref(0);
+import { scrollbarOptions } from '../config/scrollbarOptions';
+import { getTicketOrTickets } from '../helpers/functions/ticketOrTickets';
 
 export default defineComponent({
   name: 'YourTickets',
@@ -86,11 +87,11 @@ export default defineComponent({
   },
   setup() {
     const subheading: Ref<string> = ref(`You have 0 open tickets`);
-    const creatingTicket: Ref<boolean> = ref(false);
-    const selectedTicket: Ref<ITicketMetaData | undefined> = ref(undefined);
-    const attemptClose: Ref<boolean> = ref(false);
+    const creatingTicket: Ref<boolean> = ref<boolean>(false);
+    const selectedTicket = ref<ITicketMetaData | undefined>(undefined);
+    const attemptClose = ref<boolean>(false);
     const userStateStore = userStore();
-
+    const tries = ref<number>(0);
     const ticketState = ticketStore();
     const ticketRef = storeToRefs(ticketState);
 
@@ -98,23 +99,15 @@ export default defineComponent({
       if (tries.value > 3) return;
       const { response, errors } = await getPersonalTickets(TicketStatus.open, userStateStore.user.providerId);
       if (errors && errors.response.status === 403) return tries.value++;
-
       ticketState.setMetadata(response.data);
     };
 
     onMounted(async () => {
       await getData();
-      if (ticketRef.metadata.value && ticketRef.metadata.value && ticketRef.metadata.value.length) {
-        const ticketOrTickets = ticketRef.metadata.value.length < 2 ? 'ticket' : 'tickets';
-        subheading.value = `You have ${ticketRef.metadata.value.length} open ${ticketOrTickets}`;
+      if (ticketRef.metadata.value && ticketRef.metadata.value.length) {
+        subheading.value = getTicketOrTickets(ticketRef.metadata.value);
       }
     });
-
-    const scrollbarOptions = {
-      maxScrollbarLength: 40,
-      wheelSpeed: 0.2,
-      swipeEasing: true,
-    };
 
     return {
       metadata: ticketRef.metadata,
@@ -130,6 +123,7 @@ export default defineComponent({
           isDraft: true,
           authorId: userStateStore.user.providerId,
           author: userStateStore.user.name,
+          updated: true,
           subject: {
             type: 'doc',
             content: [
@@ -169,9 +163,7 @@ export default defineComponent({
         const ticket: ITicketMetaData | undefined = ticketState.metadata.find(
           (el: ITicketMetaData) => el._id === ticketId
         );
-
         selectedTicket.value = ticket;
-        // console.log(ticketState.metadata.find((el: ITicketMetaData) => el._id === ticketId));
       },
       handleAttemptClose() {
         attemptClose.value = true;
